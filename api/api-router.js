@@ -11,7 +11,7 @@ router.use('/auth/login', loginAuthRouter);
 
 
 router.get('/', (req,res) => {
-    res.send(`<h2>${messageOfTheDay}</h2>`)
+    res.send(`<h2>Server ON</h2>`)
 });
 
 module.exports = router;
