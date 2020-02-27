@@ -84,19 +84,5 @@ function checkEmail(req, res, next) {
     }
 }
 
-/// Check Valid Login Fields
-
-function validateLogin(req, res, next) {
-    const postData = req.body;
-    if(!postData) {
-        res.status(400).json({ message: "missing user data" });
-      } else if (!postData.username) {
-        res.status(400).json({ message: 'missing username field'})
-      } else if (!postData.password) {
-          res.status(400).json({ message: 'missing password field'})
-      } else {
-        next();
-      }
-}
 
 module.exports = router;
