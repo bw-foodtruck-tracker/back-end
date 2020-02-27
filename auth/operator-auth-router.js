@@ -8,7 +8,7 @@ const Users = require('../operators/operators-model');
 
 const secrets = require('../config/secrets.js');
 
-router.post('/register', validateUserInfo, checkForUsername, checkPassword, (req, res) => {
+router.post('/register', validateUserInfo, checkForUsername, checkPassword, checkEmail, (req, res) => {
 
     
     const user = req.body;
@@ -100,13 +100,25 @@ function checkForUsername(req, res, next) {
 function checkPassword(req, res, next) { 
 
     let { password } = req.body;
-    var secureCheck = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,50}$/;
+    const secureCheck = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,50}$/;
         if(password.match(secureCheck)) { 
             next()
         } else { 
             res.status(400).json({ message: 'please enter a correct password'})
         }
 } 
+
+function checkEmail(req, res, next) {
+    let {email} = req.body;
+    const emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    if(email.match(emailFormat)) {
+        next()
+    } else {
+        res.status(400).json({ message: 'please enter a correct email address'})
+    }
+}
+
 
 function validateLogin(req, res, next) {
     const postData = req.body;
