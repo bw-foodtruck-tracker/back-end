@@ -10,8 +10,6 @@ router.use('/auth/diner', dinerAuthRouter);
 router.use('/auth/login', loginAuthRouter);
 
 
-router.get('/', (req,res) => {
-    res.send(`<h2>Server ON</h2>`)
-});
+
 
 module.exports = router;
