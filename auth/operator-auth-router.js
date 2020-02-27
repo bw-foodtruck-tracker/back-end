@@ -8,21 +8,24 @@ const Users = require('../operators/operators-model');
 
 const secrets = require('../config/secrets.js');
 
-router.post('/register', (req, res) => {
+router.post('/register', validateUser, (req, res) => {
+
+    
     const user = req.body;
 
     const hash = bcrypt.hashSync(user.password, 10);
     user.password = hash;
 
 
-    Users.add(user)
-    .then(user => {
-        // const token = genToken(user);
-        res.status(201).json({user: user});
-    })
-    .catch(err => {
-        res.status(500).json(err.message);
-    })
+    
+        Users.add(user)
+            .then(user => {
+                // const token = genToken(user);
+                res.status(201).json({user: user});
+            })
+            .catch(err => {
+                res.status(500).json(err.message);
+            })
         
 });
 
@@ -63,20 +66,19 @@ function genToken(user) {
 
 /// Validate User
 
-// function validateUser(req, res, next) {
-//     const postData = req.body;
-//     if(!postData) {
-//       res.status(400).json({ message: "missing user data" });
-//     } else if (!postData.username) {
-//       res.status(400).json({ message: 'missing username field'})
-//     } else if (!postData.password) {
-//         res.status(400).json({ message: 'missing password field'})
-//     } else if (!postData.email) {
-//         res.status(400).json({ message: 'missing email field'})
-//     } else {
-//       next();
-//     }
-//   }
+function validateUser(req, res, next) {
+    let { username } = req.body;
+
+    Users.findBy({username})
+        .first()
+        .then(item => {
+            if(item) {
+                res.status(400).json({error: "username already exists"})
+            } else {
+                next()
+            }
+        })
+  }
 
 function validateLogin(req, res, next) {
     const postData = req.body;

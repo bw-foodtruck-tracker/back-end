@@ -14,7 +14,7 @@ module.exports = {
 
   function findBy(search) {
       return db('operators')
-        .select('id', 'username', 'password')
+        // .select('id', 'username', 'password')
         .where(search)
   }
 
