@@ -2,22 +2,16 @@ const router = require('express').Router();
 
 const bcrypt = require('bcryptjs');
 
-const jwt = require('jsonwebtoken');
-
 const Users = require('../operators/operators-model');
 
-const secrets = require('../config/secrets.js');
 
 router.post('/register', validateUserInfo, checkForUsername, checkPassword, checkEmail, (req, res) => {
 
-    
     const user = req.body;
 
     const hash = bcrypt.hashSync(user.password, 10);
     user.password = hash;
 
-
-    
         Users.add(user)
             .then(user => {
                 // const token = genToken(user);
@@ -29,40 +23,7 @@ router.post('/register', validateUserInfo, checkForUsername, checkPassword, chec
         
 });
 
-router.post('/login', validateLogin, (req,res) => {
-    let { username, password} = req.body;
 
-    Users.findBy({username})
-        .first()
-        .then(user => {
-            console.log(user)
-            if (user && bcrypt.compareSync(password, user.password)) {
-                const token = genToken(user);
-                res.status(200).json({username: user.username, token: token})
-            } else {
-                res.status(401).json({message: "Invalid credentials"})
-            }
-        })
-        .catch( err=> {
-            res.status(500).json(err)
-        })
-})
-
-
-
-/// Helper function
-
-function genToken(user) {
-    const payload = {
-        userid: user.id,
-        username: user.username
-    }
-
-    const options = { expiresIn: '1h' };
-    const token = jwt.sign(payload, secrets.jwtSecret, options);
-
-  return token;
-}
 
 /// Validate User
 
@@ -77,13 +38,12 @@ function checkForUsername(req, res, next) {
                 next();
             }
     })    
-  }
+}
 
-  function validateUserInfo(req, res, next) {
+/// Validate UserInfo
+
+function validateUserInfo(req, res, next) {
     const postData = req.body;
-
-
-
     if(postData.username === "") {
         res.status(400).json({ message: "username can not be empty" });
     }  else if (!postData.password && !postData.email) {
@@ -95,7 +55,9 @@ function checkForUsername(req, res, next) {
     } else {
         next();
     }
-  }
+}
+
+/// Check Secure Password
 
 function checkPassword(req, res, next) { 
 
@@ -108,6 +70,8 @@ function checkPassword(req, res, next) {
         }
 } 
 
+/// Check Valid Email
+
 function checkEmail(req, res, next) {
     let {email} = req.body;
     const emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -119,6 +83,7 @@ function checkEmail(req, res, next) {
     }
 }
 
+/// Check Valid Login Fields
 
 function validateLogin(req, res, next) {
     const postData = req.body;
