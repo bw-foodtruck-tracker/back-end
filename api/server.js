@@ -10,4 +10,9 @@ configureMiddleware(server);
 
 server.use('/api', foodTruckRouter);
 
+server.get('/', (req,res) => {
+    
+    res.send(`<h2>Server ON</h2>`)
+});
+
 module.exports = server
