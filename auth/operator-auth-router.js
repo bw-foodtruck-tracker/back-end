@@ -8,7 +8,7 @@ const Users = require('../operators/operators-model');
 
 const secrets = require('../config/secrets.js');
 
-router.post('/register', validateUser, (req, res) => {
+router.post('/register', validateUserInfo, checkForUsername, (req, res) => {
 
     
     const user = req.body;
@@ -66,18 +66,32 @@ function genToken(user) {
 
 /// Validate User
 
-function validateUser(req, res, next) {
+function checkForUsername(req, res, next) {
     let { username } = req.body;
-
     Users.findBy({username})
         .first()
         .then(item => {
             if(item) {
                 res.status(400).json({error: "username already exists"})
             } else {
-                next()
+                next();
             }
-        })
+    })    
+  }
+
+  function validateUserInfo(req, res, next) {
+    const postData = req.body;
+    if(postData.username === "") {
+        res.status(400).json({ message: "username can not be empty" });
+    }  else if (!postData.password && !postData.email) {
+        res.status(400).json({ message: 'missing password and email field'})
+    } else if (!postData.email) {
+        res.status(400).json({ message: 'missing email field'})
+    } else if (!postData.password){
+        res.status(400).json({ message: 'missing password field'})
+    } else {
+        next();
+    }
   }
 
 function validateLogin(req, res, next) {
