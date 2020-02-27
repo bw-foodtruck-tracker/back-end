@@ -1,11 +1,10 @@
-const db = require('../database/dbConfig.js');
+const db = require('../database/dbconfig.js');
 
 module.exports = {
     add,
     find,
     findBy,
-    findById,
-    // findByDepartment,
+    findById
   };
 
   function find() {
@@ -18,11 +17,7 @@ module.exports = {
         .where(search)
   }
 
-//   function findByDepartment(search) {
-//     return db('users')
-//       .select('id', 'username', 'password')
-//       .where('users.department', search)
-// }
+
 
   function findById(id) {
     return db('diners')
