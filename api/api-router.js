@@ -1,17 +1,17 @@
-// const router = require('express').Router();
+const router = require('express').Router();
 
-// const dinerAuthRouter = require('../auth/diner-auth-router.js');
-// const operatorAuthRouter = require('../auth/operator-auth-router.js');
-// const loginAuthRouter = require('../auth/login-router.js');
-
-
-// router.use('/auth/operator', operatorAuthRouter);
-// router.use('/auth/diner', dinerAuthRouter);
-// router.use('/auth/login', loginAuthRouter);
+const dinerAuthRouter = require('../auth/diner-auth-router.js');
+const operatorAuthRouter = require('../auth/operator-auth-router.js');
+const loginAuthRouter = require('../auth/login-router.js');
 
 
-// router.get('/', (req,res) => {
-//     res.json({api: 'working'})
-// });
+router.use('/auth/operator', operatorAuthRouter);
+router.use('/auth/diner', dinerAuthRouter);
+router.use('/auth/login', loginAuthRouter);
 
-// module.exports = router;
+
+router.get('/', (req,res) => {
+    res.send(`<h2>${messageOfTheDay}</h2>`)
+});
+
+module.exports = router;
