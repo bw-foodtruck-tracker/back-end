@@ -8,7 +8,7 @@ const Users = require('../operators/operators-model');
 
 const secrets = require('../config/secrets.js');
 
-router.post('/register', validateUserInfo, checkForUsername, (req, res) => {
+router.post('/register', validateUserInfo, checkForUsername, checkPassword, (req, res) => {
 
     
     const user = req.body;
@@ -81,6 +81,9 @@ function checkForUsername(req, res, next) {
 
   function validateUserInfo(req, res, next) {
     const postData = req.body;
+
+
+
     if(postData.username === "") {
         res.status(400).json({ message: "username can not be empty" });
     }  else if (!postData.password && !postData.email) {
@@ -93,6 +96,17 @@ function checkForUsername(req, res, next) {
         next();
     }
   }
+
+function checkPassword(req, res, next) { 
+
+    let { password } = req.body;
+    var secureCheck = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,50}$/;
+        if(password.match(secureCheck)) { 
+            next()
+        } else { 
+            res.status(400).json({ message: 'please enter a correct password'})
+        }
+} 
 
 function validateLogin(req, res, next) {
     const postData = req.body;
