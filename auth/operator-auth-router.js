@@ -14,30 +14,15 @@ router.post('/register', (req, res) => {
     const hash = bcrypt.hashSync(user.password, 10);
     user.password = hash;
 
-    Users.findBy({email: req.body.email})
-        .then(item => {
-            if(item) {
-                res.status(400).json({message: "email already exists"})
-            } else {
-                next()
-            }
-        })
-        Users.findBy({username: req.body.username})
-            .then(item => {
-                if(item) {
-                    res.status(400).json({message: "username already exists"})
-                } else {
-                    next()
-                }
-        })
-        Users.add(user)
-            .then(user => {
-                // const token = genToken(user);
-                res.status(201).json({user: user, token: token});
-            })
-            .catch(err => {
-                res.status(500).json(err.message);
-            })
+
+    Users.add(user)
+    .then(user => {
+        // const token = genToken(user);
+        res.status(201).json({user: user});
+    })
+    .catch(err => {
+        res.status(500).json(err.message);
+    })
         
 });
 
@@ -50,7 +35,7 @@ router.post('/login', validateLogin, (req,res) => {
             console.log(user)
             if (user && bcrypt.compareSync(password, user.password)) {
                 const token = genToken(user);
-                res.status(200).json({username: user.username, department: user.department, token: token})
+                res.status(200).json({username: user.username, token: token})
             } else {
                 res.status(401).json({message: "Invalid credentials"})
             }
