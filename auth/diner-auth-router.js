@@ -67,7 +67,7 @@ function checkPassword(req, res, next) {
         if(password.match(secureCheck)) { 
             next()
         } else { 
-            res.status(400).json({ message: 'please enter a correct password'})
+            res.status(400).json({ message: 'please enter a password with a minimum 8 characters, one capitalized letter, one number, and one symbol'})
         }
 } 
 
@@ -80,7 +80,7 @@ function checkEmail(req, res, next) {
     if(email.match(emailFormat)) {
         next()
     } else {
-        res.status(400).json({ message: 'please enter a correct email address'})
+        res.status(400).json({ message: 'please enter a valid email address'})
     }
 }
 
