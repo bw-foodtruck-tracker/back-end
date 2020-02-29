@@ -6,6 +6,7 @@ module.exports = {
     findBy,
     findById,
     addTruck,
+    updateTruck
   };
 
   function find() {
@@ -31,11 +32,7 @@ module.exports = {
       .first()
   }
 
-  function findByIdTruck(id) {
-    return db('trucks')
-      .where('trucks.id', id)
-      .first()
-  }
+
 
  
 function add(user) {
@@ -46,10 +43,27 @@ function add(user) {
           });
 }
 
+// Truck CRUD
+
+function findByIdTruck(id) {
+  return db('trucks')
+    .where('trucks.id', id)
+    .first()
+}
+
 function addTruck(truck) {
   return db('trucks')
       .insert(truck)
       .then(ids => {
           return findByIdTruck(ids[0]);
         });
+}
+
+function updateTruck(id, changes) {
+  return db('trucks')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByIdTruck(id);
+    });
 }

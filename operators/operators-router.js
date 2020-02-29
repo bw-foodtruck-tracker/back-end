@@ -40,4 +40,24 @@ router.post('/:id/truck', restricted, checkRole(), (req,res) => {
         })
 })
 
+
+router.put('/:id/truck', restricted, checkRole(), (req, res) => {
+    const updateTruck = {
+        operator_id: req.params.id,
+        truckName: req.body.truckName,
+        imageOfTruck: req.body.imageOfTruck,
+        cuisineType: req.body.cuisineType,
+        currentLocation: req.body.currentLocation,
+        departureTime: req.body.departureTime
+    }
+  
+    Operators.updateTruck(req.params.id, updateTruck)
+      .then(post => {
+        res.status(200).json(post);
+      })
+      .catch(err => {
+          res.status(500).json({error: "The truck information could not be modified"});
+      })
+  });
+
 module.exports = router;
