@@ -5,10 +5,14 @@ module.exports = {
     find,
     findBy,
     findById,
+    findByIdTruck,
     addTruck,
     updateTruck,
     removeTruck,
-    addMenuItem
+    findByIdMenu,
+    addMenuItem,
+    updateMenuItem,
+    removeMenuItem
   };
 
   function find() {
@@ -90,4 +94,19 @@ function addMenuItem(item) {
       .then(ids => {
           return findByIdMenu(ids[0]);
         });
+}
+
+function updateMenuItem(id, changes) {
+  return db('menuItems')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByIdMenu(id);
+    });
+}
+
+function removeMenuItem(id) {
+  return db('menuItems')
+    .where('id', id)
+    .del();
 }
