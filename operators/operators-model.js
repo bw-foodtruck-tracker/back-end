@@ -12,7 +12,11 @@ module.exports = {
     findByIdMenu,
     addMenuItem,
     updateMenuItem,
-    removeMenuItem
+    removeMenuItem,
+    findByIdItemPhotos,
+    updateItemPhotos,
+    addItemPhotos,
+    removeItemPhotos,
   };
 
   function find() {
@@ -107,6 +111,37 @@ function updateMenuItem(id, changes) {
 
 function removeMenuItem(id) {
   return db('menuItems')
+    .where('id', id)
+    .del();
+}
+
+// itemPhotos CRUD
+
+function findByIdItemPhotos(id) {
+  return db('itemPhotos')
+    .where('itemPhotos.id', id)
+    .first()
+}
+
+function addItemPhotos(item) {
+  return db('itemPhotos')
+      .insert(item)
+      .then(ids => {
+          return findByIdItemPhotos(ids[0]);
+        });
+}
+
+function updateItemPhotos(id, changes) {
+  return db('itemPhotos')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByIdItemPhotos(id);
+    });
+}
+
+function removeItemPhotos(id) {
+  return db('itemPhotos')
     .where('id', id)
     .del();
 }

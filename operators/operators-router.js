@@ -100,10 +100,9 @@ router.post('/:id/menu', restricted, checkRole(), (req,res) => {
 
 router.put('/:id/menu', restricted, checkRole(), validateMenuId, (req, res) => {
     const updateMenuItem = {
-        truck_id: req.params.id,
         itemName: req.body.itemName,
         itemDescription: req.body.itemDescription,
-        itemPrice: req.body.itemPrice,
+        itemPrice: req.body.itemPrice
     }
   
     Operators.updateMenuItem(req.params.id, updateMenuItem)
@@ -116,13 +115,58 @@ router.put('/:id/menu', restricted, checkRole(), validateMenuId, (req, res) => {
       })
   });
 
-router.delete('/:id/menu', restricted, checkRole(), (req, res) => {
+router.delete('/:id/menu', restricted, checkRole(), validateMenuId, (req, res) => {
     Operators.removeMenuItem(req.params.id)
       .then(post => {
         res.status(200).json(post);
       })
       .catch(err => {
         res.status(500).json({error: "The menu could not be removed"});
+      })
+});
+
+// ITEMPHOTOS CRUD
+
+router.post('/:id/item-photo', restricted, checkRole(), validateMenuId, (req,res) => {
+
+    const newItemPhoto = {
+        menu_id: req.params.id,
+        image: req.body.image
+    }
+
+    Operators.addItemPhotos(newItemPhoto)
+        .then(item => {
+            console.log(item)
+            res.status(201).json(item);
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: "There was an error while saving the item to the database" });
+        })
+})
+
+router.put('/:id/item-photo', restricted, checkRole(), validateItemPhotoId, (req, res) => {
+    const updatePhoto = {
+        image: req.body.image
+    }
+  
+    Operators.updateItemPhotos(req.params.id, updatePhoto)
+      .then(post => {
+        res.status(200).json(post);
+      })
+      .catch(err => {
+          console.log(err)
+          res.status(500).json({error: "The photo could not be modified"});
+      })
+  });
+
+router.delete('/:id/item-photo', restricted, checkRole(), validateItemPhotoId, (req, res) => {
+    Operators.removeItemPhotos(req.params.id)
+      .then(post => {
+        res.status(200).json(post);
+      })
+      .catch(err => {
+        res.status(500).json({error: "The photo could not be removed"});
       })
 });
 
@@ -169,6 +213,22 @@ function validateTruckId(req, res, next) {
           next();
         } else {
           res.status(400).json({ message: "invalid truck id" });
+        }   
+      })
+      .catch(err => {
+        res.status(500).json({message: 'exception error'});
+      })
+}
+
+function validateItemPhotoId(req, res, next) {
+    const {id} = req.params;
+    Operators.findByIdItemPhotos(id)
+      .then(item => {
+        if(item) {
+          req.item = item;
+          next();
+        } else {
+          res.status(400).json({ message: "invalid photo id" });
         }   
       })
       .catch(err => {
