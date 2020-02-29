@@ -19,6 +19,18 @@ router.get('/:id', restricted, checkRole(), (req,res) => {
         })
 });
 
+router.get('/:id/all', restricted, checkRole(), (req,res) => {
+    console.log(req.params)
+    
+    Operators.findOperatorTrucks(req.params.id)
+        .then(operator => {
+            res.status(201).json(operator)
+        })
+        .catch(err => {
+            res.status(500).json({error: "the operator could not be retrieved"})
+        })
+});
+
 
 // TRUCK CRUD
 

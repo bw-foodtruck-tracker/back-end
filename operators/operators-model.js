@@ -17,6 +17,7 @@ module.exports = {
     updateItemPhotos,
     addItemPhotos,
     removeItemPhotos,
+    findOperatorTrucks
   };
 
   function find() {
@@ -51,6 +52,13 @@ function add(user) {
         .then(ids => {
             return findById(ids[0]);
           });
+}
+
+function findOperatorTrucks(id) {
+  return db('trucks as t')
+    .join('operators as o', 'o.id', 't.operator_id')
+    .select('t.*')
+    .where('t.operator_id', id)
 }
 
 // Truck CRUD
