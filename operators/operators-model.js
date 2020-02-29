@@ -6,7 +6,8 @@ module.exports = {
     findBy,
     findById,
     addTruck,
-    updateTruck
+    updateTruck,
+    removeTruck
   };
 
   function find() {
@@ -66,4 +67,10 @@ function updateTruck(id, changes) {
     .then(() => {
       return findByIdTruck(id);
     });
+}
+
+function removeTruck(id) {
+  return db('trucks')
+    .where('id', id)
+    .del();
 }

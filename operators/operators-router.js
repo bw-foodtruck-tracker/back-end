@@ -60,4 +60,14 @@ router.put('/:id/truck', restricted, checkRole(), (req, res) => {
       })
   });
 
+router.delete('/:id/truck', (req, res) => {
+    Operators.removeTruck(req.params.id)
+      .then(post => {
+        res.status(200).json(post);
+      })
+      .catch(err => {
+        res.status(500).json({error: "The truck could not be removed"});
+      })
+});
+
 module.exports = router;
