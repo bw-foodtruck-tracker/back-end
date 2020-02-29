@@ -7,7 +7,8 @@ module.exports = {
     findById,
     addTruck,
     updateTruck,
-    removeTruck
+    removeTruck,
+    addMenuItem
   };
 
   function find() {
@@ -73,4 +74,20 @@ function removeTruck(id) {
   return db('trucks')
     .where('id', id)
     .del();
+}
+
+// Menu Crud
+
+function findByIdMenu(id) {
+  return db('menuItems')
+    .where('menuItems.id', id)
+    .first()
+}
+
+function addMenuItem(item) {
+  return db('menuItems')
+      .insert(item)
+      .then(ids => {
+          return findByIdMenu(ids[0]);
+        });
 }

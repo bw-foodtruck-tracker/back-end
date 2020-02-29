@@ -19,6 +19,10 @@ router.get('/:id', restricted, checkRole(), (req,res) => {
         })
 });
 
+
+// TRUCK CRUD
+
+
 router.post('/:id/truck', restricted, checkRole(), (req,res) => {
 
     const newTruck = {
@@ -69,5 +73,29 @@ router.delete('/:id/truck', (req, res) => {
         res.status(500).json({error: "The truck could not be removed"});
       })
 });
+
+// MENU CRUD
+
+router.post('/:id/menu', restricted, checkRole(), (req,res) => {
+
+    const newMenuItem = {
+        truck_id: req.params.id,
+        itemName: req.body.itemName,
+        itemDescription: req.body.itemDescription,
+        itemPrice: req.body.itemPrice,
+    }
+
+    console.log(newMenuItem)
+
+    Operators.addMenuItem(newMenuItem)
+        .then(item => {
+            console.log(item)
+            res.status(201).json(item);
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: "There was an error while saving the item to the database" });
+        })
+})
 
 module.exports = router;
