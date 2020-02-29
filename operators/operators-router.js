@@ -7,8 +7,7 @@ const checkRole = require('../auth/check-role-middleware-operator.js');
 
 
 
-router.get('/:id', restricted, (req,res) => {
-    console.log(req.decodedJwt)
+router.get('/:id', restricted, checkRole(), (req,res) => {
     
     Operators.findById(req.params.id)
         .then(operator => {

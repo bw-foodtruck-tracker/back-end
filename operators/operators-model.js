@@ -26,8 +26,9 @@ module.exports = {
 
   function findById(id) {
     return db('operators')
-      .where({ id })
-      .first();
+      .select('id', 'username', 'email', 'role')
+      .where('operators.id', id)
+      .first()
   }
 
  
