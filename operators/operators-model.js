@@ -17,7 +17,8 @@ module.exports = {
     updateItemPhotos,
     addItemPhotos,
     removeItemPhotos,
-    findOperatorTrucks
+    findOperatorTrucks,
+    
   };
 
   function find() {
@@ -153,3 +154,4 @@ function removeItemPhotos(id) {
     .where('id', id)
     .del();
 }
+

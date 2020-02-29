@@ -182,6 +182,8 @@ router.delete('/:id/item-photo', restricted, checkRole(), validateItemPhotoId, (
       })
 });
 
+
+
 // Validate Id
 
 function validateOperatorId(req, res, next) {

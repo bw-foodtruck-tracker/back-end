@@ -4,7 +4,11 @@ module.exports = {
     add,
     find,
     findBy,
-    findById
+    findById,
+    findByCustomerRatingTruckId,
+    addCustomerRatingTruck,
+    updateCustomerRatingTruck,
+    removeCustomerRatingTruck
   };
 
   function find() {
@@ -31,4 +35,42 @@ function add(user) {
         .then(ids => {
             return findById(ids[0]);
           });
+}
+
+// Customer Rating Truck
+
+function findByCustomerRatingId(id) {
+  return db('customerRatingTruck')
+    .where({ id })
+    .first();
+}
+
+
+function findByCustomerRatingTruckId(id) {
+  return db('customerRatingTruck')
+    .where('customerRatingTruck.id', id)
+    .first()
+}
+
+function addCustomerRatingTruck(item) {
+  return db('customerRatingTruck')
+      .insert(item)
+      .then(ids => {
+          return findByCustomerRatingId(ids[0]);
+        });
+}
+
+function updateCustomerRatingTruck(id, changes) {
+  return db('customerRatingTruck')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByCustomerRatingId(id);
+    });
+}
+
+function removeCustomerRatingTruck(id) {
+  return db('customerRatingTruck')
+    .where('id', id)
+    .del();
 }
