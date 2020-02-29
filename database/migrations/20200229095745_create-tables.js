@@ -1,16 +1,5 @@
 exports.up = function(knex) {
     return knex.schema
-      .createTable('operators', tbl => {
-        tbl.increments();
-        tbl.string('username', 128)
-          .unique()
-          .notNullable()
-        tbl.string('password', 128)
-          .notNullable()
-        tbl.string('email', 128)
-          .notNullable()
-        tbl.string('role', 128).defaultTo('operator')
-      })
       .createTable('diners', tbl => {
         tbl.increments();
         tbl.string('username', 128)
@@ -21,7 +10,18 @@ exports.up = function(knex) {
         tbl.string('email', 128)
           .notNullable()
         tbl.string('currentLocation', 255)
-        tbl.string('role', 128).defaultTo('diner')
+        tbl.string('role', 128).notNullable().defaultTo('diner')
+      })
+      .createTable('operators', tbl => {
+        tbl.increments();
+        tbl.string('username', 128)
+          .unique()
+          .notNullable()
+        tbl.string('password', 128)
+          .notNullable()
+        tbl.string('email', 128)
+          .notNullable()
+        tbl.string('role', 128).notNullable().defaultTo('operator')
       })
       .createTable('trucks', tbl => {
         tbl.increments()
@@ -112,8 +112,8 @@ exports.up = function(knex) {
   
   exports.down = function(knex) {
     return knex.schema
-      .dropTableIfExists('operators')
       .dropTableIfExists('diners')
+      .dropTableIfExists('operators')
       .dropTableIfExists('trucks')
       .dropTableIfExists('menuItems')
       .dropTableIfExists('ItemPhotos')

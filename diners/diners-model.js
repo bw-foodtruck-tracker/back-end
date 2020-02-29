@@ -13,7 +13,6 @@ module.exports = {
 
   function findBy(search) {
       return db('diners')
-        .select('id', 'username', 'password')
         .where(search)
   }
 
