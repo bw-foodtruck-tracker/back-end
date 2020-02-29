@@ -5,7 +5,7 @@ module.exports = {
     find,
     findBy,
     findById,
-    // findByDepartment,
+    addTruck,
   };
 
   function find() {
@@ -31,6 +31,12 @@ module.exports = {
       .first()
   }
 
+  function findByIdTruck(id) {
+    return db('trucks')
+      .where('trucks.id', id)
+      .first()
+  }
+
  
 function add(user) {
     return db('operators')
@@ -38,4 +44,12 @@ function add(user) {
         .then(ids => {
             return findById(ids[0]);
           });
+}
+
+function addTruck(truck) {
+  return db('trucks')
+      .insert(truck)
+      .then(ids => {
+          return findByIdTruck(ids[0]);
+        });
 }
