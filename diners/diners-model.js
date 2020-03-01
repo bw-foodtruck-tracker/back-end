@@ -15,7 +15,9 @@ module.exports = {
     removeCustomerRatingMenu,
     findFavouriteTrucksById,
     addFavouriteTrucks,
-    removeFavouriteTrucks
+    removeFavouriteTrucks,
+    findFavTruckByDinerId,
+    addFavouriteToMany
   };
 
   function find() {
@@ -114,6 +116,20 @@ function findFavouriteTrucksById(id) {
   return db('favouriteTrucks')
     .where({ id })
     .first();
+}
+
+function findFavTruckByDinerId(id) {
+  return db('trucks')
+    
+    .where({id})
+}
+
+function addFavouriteToMany(item) {
+  return db('diners_favouriteTrucks')
+      .insert(item)
+      // .then(ids => {
+      //     return findFavouriteTrucksById(ids[0]);
+      //   });
 }
 
 

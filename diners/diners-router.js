@@ -6,6 +6,15 @@ const Operators = require('../operators/operators-model.js');
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-diner.js');
 
+router.get('/:id', (req,res) => {
+    Diners.findById(req.params.id)
+        .then(diner => {
+            const {id, username, email } = diner
+        })
+
+        
+})
+
 
 router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId, (req,res) => {
 
@@ -103,20 +112,27 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 
 // Favourite Trucks
 
-router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res) => {
+router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res,next) => {
 
     console.log(req.decodedJwt.userid)
 
     const favTruck= {
         truck_id: req.params.id,
+        
+    }
+    const newInsert = {
         diner_id: req.decodedJwt.userid,
+        favouriteTrucks_id: req.params.id
     }
 
     Diners.addFavouriteTrucks(favTruck)
         .then(truck => {
-            // console.log(item)
-            res.status(201).json(truck);
+            next()
         })
+        Diners.addFavouriteToMany(newInsert)
+            .then(task => {
+                res.status(201).json(task); 
+            })
         .catch(err => {
             console.log(err)
             res.status(500).json({ error: "There was an error while saving the truck to the database" });
@@ -124,7 +140,10 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (r
 })
 
 
+
 router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req, res) => {
+
+    
     Diners.removeFavouriteTrucks(req.params.id)
       .then(post => {
         res.status(200).json(post);
@@ -133,6 +152,25 @@ router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavourite
         res.status(500).json({error: "The truck could not be removed"});
       })
 });
+
+
+
+router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req,res) => {
+    // console.log(req.truck.truck_id)
+    console.log(req)
+    Diners.findManytoMany(req.decodedJwt.userid)
+    .then(post => {
+        if(post) {
+            res.status(200).json(post);
+        } else {
+            res.status(400).json({message: "Diner has no favourite trucks"})
+        }
+      })
+      .catch(err => {
+          console.log(err)
+        res.status(500).json({error: "favourite trucks could not be displayed"});
+      })
+})
 
 
 // Validate Id Truck

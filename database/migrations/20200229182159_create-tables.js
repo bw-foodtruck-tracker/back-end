@@ -101,23 +101,38 @@ exports.up = function(knex) {
                 .references('trucks.id')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE')
-            tbl.integer('diner_id')
-                .unsigned()
-                .notNullable()
-                .references('diners.id')
-                .onUpdate('CASCADE')
-                .onDelete('CASCADE');
         })
+        .createTable('diners_favouriteTrucks', tbl => {
+          tbl.integer('diner_id')
+              .unsigned()
+              .notNullable()
+              .references('id')
+              .inTable('diners')
+              .onUpdate('CASCADE')
+              .onDelete('CASCADE');
+          tbl.integer('favouriteTrucks_id')
+              .unsigned()
+              .notNullable()
+              .references('id')
+              .inTable('favouriteTrucks')
+              .onUpdate('CASCADE')
+              .onDelete('CASCADE');
+          tbl.primary(['diner_id', 'favouriteTrucks_id']);
+      })
   };
   
   exports.down = function(knex) {
     return knex.schema
-      .dropTableIfExists('diners')
-      .dropTableIfExists('operators')
-      .dropTableIfExists('trucks')
-      .dropTableIfExists('menuItems')
-      .dropTableIfExists('ItemPhotos')
-      .dropTableIfExists('customerRatingTruck')
-      .dropTableIfExists('customerRatingMenu')
+      .dropTableIfExists('diners_favouriteTrucks')
       .dropTableIfExists('favouriteTrucks')
+      .dropTableIfExists('customerRatingMenu')
+      .dropTableIfExists('customerRatingTruck')
+      .dropTableIfExists('ItemPhotos')
+      .dropTableIfExists('menuItems')
+      .dropTableIfExists('trucks')
+      .dropTableIfExists('operators')
+      .dropTableIfExists('diners')
+      
+      
   };
+
