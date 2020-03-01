@@ -117,13 +117,13 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (r
     .then(trucks => {
         const newFavTruck = {
             truck_id: req.body.truck_id,
+            diner_id: req.params.id,
             truckName: trucks.truckName,
             cuisineType: trucks.cuisineType,
             imageOfTruck: trucks.imageOfTruck,
             customerRatingAvg: trucks.customerRatingAvg,
             currentLocation: trucks.currentLocation,
             departureTime: trucks.departureTime,
-            diner_id: req.params.id
         }
         console.log(newFavTruck)
         Diners.addFavouriteTrucks(newFavTruck)
@@ -268,7 +268,6 @@ function validateFavouriteTruckId(req, res, next) {
 }
 
 // Check for Duplicate Favourite Truck
-
 
 
 
