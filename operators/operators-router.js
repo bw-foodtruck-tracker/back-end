@@ -36,7 +36,7 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 
 
 router.post('/:id/truck', restricted, checkRole(), validateOperatorId, (req,res) => {
-
+  
     const newTruck = {
         operator_id: req.params.id,
         truckName: req.body.truckName,
@@ -45,15 +45,24 @@ router.post('/:id/truck', restricted, checkRole(), validateOperatorId, (req,res)
         currentLocation: req.body.currentLocation,
         departureTime: req.body.departureTime
     }
-    console.log(newTruck)
-    Operators.addTruck(newTruck)
-        .then(truck => {
-            console.log(truck)
-            res.status(201).json(truck);
-        })
-        .catch(err => {
-            res.status(500).json({ error: "There was an error while saving the task to the database" });
-        })
+    
+    console.log(req.body.truckName)
+    Operators.findByTruckName(req.body.truckName)
+      .then(truck => {
+        console.log(truck)
+        if(truck.length > 0) {
+          res.status(400).json({ error: "Truck name must be unique" });
+        } else {
+          Operators.addTruck(newTruck)
+            .then(truck => {
+                res.status(201).json(truck);
+            })
+            .catch(err => {
+                res.status(500).json({ error: "There was an error while saving the task to the database" });
+          })
+        }
+      })
+    
 })
 
 

@@ -133,16 +133,12 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (r
                 if(truck.length > 0){
                     res.status(400).json({error: "truck already saved"});
                 } else {
-                    Diners.findFavouriteTrucksById(req.params.id)
-                    .then(item => {
-                            Diners.addFavouriteTrucks(newFavTruck)
-                                .then(trucks => {
-                                    res.status(200).json(trucks)
-                                })
-                                .catch(err => {
-                                    res.status(500).json(err.message)
-                                })
-                 
+                    Diners.addFavouriteTrucks(newFavTruck)
+                        .then(trucks => {
+                            res.status(200).json(trucks)
+                        })
+                        .catch(err => {
+                            res.status(500).json(err.message)
                         })
         
                 }

@@ -74,7 +74,7 @@ function findByIdTruck(id) {
 function findByTruckName(search) {
   return db('trucks')
     // .select('id', 'username', 'password')
-    .where(search)
+    .where('truckName', search)
 }
 
 function findByIdTruckFav(id) {
