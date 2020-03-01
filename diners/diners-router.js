@@ -101,6 +101,53 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
       })
 });
 
+// Favourite Trucks
+
+router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res) => {
+
+    console.log(req.decodedJwt.userid)
+
+    const favTruck= {
+        truck_id: req.params.id,
+        diner_id: req.decodedJwt.userid,
+    }
+
+    Diners.addFavouriteTrucks(favTruck)
+        .then(truck => {
+            // console.log(item)
+            res.status(201).json(truck);
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: "There was an error while saving the truck to the database" });
+        })
+})
+
+router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerMenuId, (req, res) => {
+    const newRating = {
+        rating: req.body.rating
+    }
+  
+    Diners.updateCustomerRatingMenu(req.params.id, newRating)
+      .then(item => {
+        res.status(200).json(item);
+      })
+      .catch(err => {
+          console.log(err)
+          res.status(500).json({error: "The rating could not be updated"});
+      })
+  });
+
+router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerMenuId, (req, res) => {
+    Diners.removeCustomerRatingMenu(req.params.id)
+      .then(post => {
+        res.status(200).json(post);
+      })
+      .catch(err => {
+        res.status(500).json({error: "The rating could not be removed"});
+      })
+});
+
 
 // Validate Id Truck
 
