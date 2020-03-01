@@ -5,10 +5,14 @@ module.exports = {
     find,
     findBy,
     findById,
-    findByCustomerRatingTruckId,
+    findByCustomerRatingId,
     addCustomerRatingTruck,
     updateCustomerRatingTruck,
-    removeCustomerRatingTruck
+    removeCustomerRatingTruck,
+    findByCustomerRatingMenuItemId,
+    addCustomerRatingMenu,
+    updateCustomerRatingMenu,
+    removeCustomerRatingMenu
   };
 
   function find() {
@@ -46,12 +50,6 @@ function findByCustomerRatingId(id) {
 }
 
 
-function findByCustomerRatingTruckId(id) {
-  return db('customerRatingTruck')
-    .where('customerRatingTruck.id', id)
-    .first()
-}
-
 function addCustomerRatingTruck(item) {
   return db('customerRatingTruck')
       .insert(item)
@@ -71,6 +69,38 @@ function updateCustomerRatingTruck(id, changes) {
 
 function removeCustomerRatingTruck(id) {
   return db('customerRatingTruck')
+    .where('id', id)
+    .del();
+}
+
+// Customer Rating MenuItem
+
+function findByCustomerRatingMenuItemId(id) {
+  return db('customerRatingMenu')
+    .where({ id })
+    .first();
+}
+
+
+function addCustomerRatingMenu(item) {
+  return db('customerRatingMenu')
+      .insert(item)
+      .then(ids => {
+          return findByCustomerRatingMenuItemId(ids[0]);
+        });
+}
+
+function updateCustomerRatingMenu(id, changes) {
+  return db('customerRatingMenu')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByCustomerRatingMenuItemId(id);
+    });
+}
+
+function removeCustomerRatingMenu(id) {
+  return db('customerRatingMenu')
     .where('id', id)
     .del();
 }
