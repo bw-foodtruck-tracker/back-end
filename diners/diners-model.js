@@ -140,9 +140,9 @@ function findFavTruckByDinerId(id) {
 function addFavouriteTrucks(item) {
   return db('favouriteTrucks')
       .insert(item)
-      .then(ids => {
-          return findFavouriteTrucksById(ids[0]);
-        });
+      // .then(ids => {
+      //     return findFavouriteTrucksById(ids[0]);
+      //   });
 }
 
 

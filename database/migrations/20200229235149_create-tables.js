@@ -94,7 +94,15 @@ exports.up = function(knex) {
                 .onDelete('CASCADE')
         })
         .createTable('favouriteTrucks', tbl => {
-            tbl.increments();
+            tbl.increments()
+            tbl.string('username', 128)
+            tbl.string('truckName', 128)
+            tbl.string('cuisineType', 128)
+            tbl.string('imageOfTruck', 128)
+            tbl.integer('customerRatingAvg')
+            tbl.text('currentLocation')
+            tbl.time('departureTime')
+            tbl.integer('operator_id')
             tbl.integer('truck_id')
                 .unsigned()
                 .notNullable()

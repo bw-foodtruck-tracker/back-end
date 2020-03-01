@@ -6,6 +6,7 @@ module.exports = {
     findBy,
     findById,
     findByIdTruck,
+    findByTruckName,
     addTruck,
     updateTruck,
     removeTruck,
@@ -18,8 +19,7 @@ module.exports = {
     addItemPhotos,
     removeItemPhotos,
     findOperatorTrucks,
-    findByIdTruckFav
-    
+    findByIdTruckFav,
   };
 
   function find() {
@@ -68,7 +68,13 @@ function findOperatorTrucks(id) {
 function findByIdTruck(id) {
   return db('trucks')
     .where('trucks.id', id)
-    // .first()
+    .first()
+}
+
+function findByTruckName(search) {
+  return db('trucks')
+    // .select('id', 'username', 'password')
+    .where(search)
 }
 
 function findByIdTruckFav(id) {

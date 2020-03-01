@@ -113,16 +113,16 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 // Favourite Trucks
 
 router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res) => {
-    Diners.findFavTruckByDinerId(req.body.truck_id)
+    Operators.findByIdTruck(req.body.truck_id)
     .then(trucks => {
         const newFavTruck = {
             truck_id: req.body.truck_id,
-            // truckName: trucks.truckName,
-            // cuisineType: trucks.cuisineType,
-            // imageOfTruck: trucks.imageOfTruck,
-            // customerRatingAvg: trucks.customerRatingAvg,
+            truckName: trucks.truckName,
+            cuisineType: trucks.cuisineType,
+            imageOfTruck: trucks.imageOfTruck,
+            customerRatingAvg: trucks.customerRatingAvg,
             currentLocation: trucks.currentLocation,
-
+            departureTime: trucks.departureTime,
             diner_id: req.params.id
         }
         console.log(newFavTruck)
@@ -262,6 +262,7 @@ function validateFavouriteTruckId(req, res, next) {
       })
 }
 
+// Check for Duplicate Favourite Truck
 
 
 
