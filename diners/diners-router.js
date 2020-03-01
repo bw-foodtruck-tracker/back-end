@@ -161,8 +161,9 @@ router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTru
     .then(post => {
         const {diner_id} = post[0]
         const List = post.map(resource => {
-            const {truck_id} = resource
-            return {truck_id}
+            console.log(resource)
+            const {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, currentLocation, departureTime, diner_id} = resource
+            return {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, currentLocation, departureTime, diner_id}
         })
         res.status(200).json({
             dinerId: diner_id,
