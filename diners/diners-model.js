@@ -13,9 +13,8 @@ module.exports = {
     addCustomerRatingMenu,
     updateCustomerRatingMenu,
     removeCustomerRatingMenu,
-    findFavoureTrucksById,
+    findFavouriteTrucksById,
     addFavouriteTrucks,
-    updateFavouriteTrucks,
     removeFavouriteTrucks
   };
 
@@ -111,7 +110,7 @@ function removeCustomerRatingMenu(id) {
 
 // Favourite Trucks
 
-function findFavoureTrucksById(id) {
+function findFavouriteTrucksById(id) {
   return db('favouriteTrucks')
     .where({ id })
     .first();
@@ -122,18 +121,10 @@ function addFavouriteTrucks(item) {
   return db('favouriteTrucks')
       .insert(item)
       .then(ids => {
-          return findFavoureTrucksById(ids[0]);
+          return findFavouriteTrucksById(ids[0]);
         });
 }
 
-function updateFavouriteTrucks(id, changes) {
-  return db('favouriteTrucks')
-    .where({ id })
-    .update(changes)
-    .then(() => {
-      return findFavoureTrucksById(id);
-    });
-}
 
 function removeFavouriteTrucks(id) {
   return db('favouriteTrucks')

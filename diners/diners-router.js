@@ -123,28 +123,14 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (r
         })
 })
 
-router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerMenuId, (req, res) => {
-    const newRating = {
-        rating: req.body.rating
-    }
-  
-    Diners.updateCustomerRatingMenu(req.params.id, newRating)
-      .then(item => {
-        res.status(200).json(item);
-      })
-      .catch(err => {
-          console.log(err)
-          res.status(500).json({error: "The rating could not be updated"});
-      })
-  });
 
-router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerMenuId, (req, res) => {
-    Diners.removeCustomerRatingMenu(req.params.id)
+router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req, res) => {
+    Diners.removeFavouriteTrucks(req.params.id)
       .then(post => {
         res.status(200).json(post);
       })
       .catch(err => {
-        res.status(500).json({error: "The rating could not be removed"});
+        res.status(500).json({error: "The truck could not be removed"});
       })
 });
 
@@ -217,6 +203,23 @@ function validateCustomerMenuId(req, res, next) {
       })
 }
 
+// Validate Favourite Truck
+
+function validateFavouriteTruckId(req, res, next) {
+    const {id} = req.params;
+    Diners.findFavouriteTrucksById(id)
+      .then(truck => {
+        if(truck) {
+          req.truck = truck;
+          next();
+        } else {
+          res.status(400).json({ message: "invalid favourite truck id" });
+        }   
+      })
+      .catch(err => {
+        res.status(500).json({message: 'exception error'});
+      })
+}
 
 
 
