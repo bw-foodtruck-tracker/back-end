@@ -112,7 +112,9 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 
 // Favourite Trucks
 
-router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res) => {
+router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (req,res) => {
+
+    
     Operators.findByIdTruck(req.body.truck_id)
     .then(trucks => {
         const newFavTruck = {
@@ -125,14 +127,23 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (r
             currentLocation: trucks.currentLocation,
             departureTime: trucks.departureTime,
         }
-        console.log(newFavTruck)
-        Diners.addFavouriteTrucks(newFavTruck)
-            .then(trucks => {
-                res.status(200).json(trucks)
+        
+        Diners.findFavouriteTrucksById2(req.body.truck_id)
+            .then(truck => {
+                if(truck.length > 0){
+                    console.log(truck)
+                    res.status(400).json({error: "truck already saved"});
+                } else {
+                    Diners.addFavouriteTrucks(newFavTruck)
+                    .then(trucks => {
+                        res.status(200).json(trucks)
+                    })
+                    .catch(err => {
+                        res.status(500).json(err.message)
+                    })
+                }
             })
-            .catch(err => {
-                res.status(500).json(err.message)
-            })
+     
         })
     
 })
@@ -268,6 +279,22 @@ function validateFavouriteTruckId(req, res, next) {
 }
 
 // Check for Duplicate Favourite Truck
+
+function validateDinerId(req, res, next) {
+    const {id} = req.params;
+    Diners.findById(id)
+      .then(rating => {
+        if(rating) {
+          req.rating = rating;
+          next();
+        } else {
+          res.status(400).json({ message: "invalid diner id" });
+        }   
+      })
+      .catch(err => {
+        res.status(500).json({message: 'exception error'});
+      })
+}
 
 
 
