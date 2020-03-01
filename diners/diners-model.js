@@ -118,19 +118,20 @@ function findByTruckSearch(search) {
     .where(search)
 }
 
-function findFavouriteTrucksById(id) {
+function findFavouriteTrucksById(diner_id) {
   return db('favouriteTrucks')
-    .where('diner_id', id)
+    .where({diner_id})
     // .first();
 }
 
 
 
-function findFavouriteTrucksById2(truck_id) {
+function findFavouriteTrucksById2(truck_id, diner_id) {
   return db('favouriteTrucks as ft')
-
-    .where({truck_id})
     
+    
+    .where({truck_id})
+    .where('diner_id', diner_id )
 }
 
 function findFavTruckByDinerId(id) {

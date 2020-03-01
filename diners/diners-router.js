@@ -112,7 +112,7 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 
 // Favourite Trucks
 
-router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (req,res) => {
+router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (req,res, next) => {
 
     
     Operators.findByIdTruck(req.body.truck_id)
@@ -127,23 +127,27 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (r
             currentLocation: trucks.currentLocation,
             departureTime: trucks.departureTime,
         }
-        
-        Diners.findFavouriteTrucksById2(req.body.truck_id)
+        Diners.findFavouriteTrucksById2(req.body.truck_id, req.params.id )
             .then(truck => {
+                console.log(truck)
                 if(truck.length > 0){
-                    console.log(truck)
                     res.status(400).json({error: "truck already saved"});
                 } else {
-                    Diners.addFavouriteTrucks(newFavTruck)
-                    .then(trucks => {
-                        res.status(200).json(trucks)
-                    })
-                    .catch(err => {
-                        res.status(500).json(err.message)
-                    })
+                    Diners.findFavouriteTrucksById(req.params.id)
+                    .then(item => {
+                            Diners.addFavouriteTrucks(newFavTruck)
+                                .then(trucks => {
+                                    res.status(200).json(trucks)
+                                })
+                                .catch(err => {
+                                    res.status(500).json(err.message)
+                                })
+                 
+                        })
+        
                 }
             })
-     
+        
         })
     
 })
