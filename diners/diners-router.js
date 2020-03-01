@@ -156,7 +156,6 @@ router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavourite
 router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req,res) => {
     
 
-    console.log(req)
     Diners.findFavouriteTrucksById(req.params.id)
     .then(post => {
         const {diner_id} = post[0]
@@ -165,15 +164,20 @@ router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTru
             const {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, currentLocation, departureTime, diner_id} = resource
             return {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, currentLocation, departureTime, diner_id}
         })
-        res.status(200).json({
-            dinerId: diner_id,
-            trucks: List
+        Diners.findById(req.params.id)
+            .then(item => {
+                res.status(200).json({
+                    username: item.username,
+                    dinerId: diner_id,
+                    trucks: List
+            })
+            .catch(err => {
+                console.log(err)
+              res.status(500).json({error: "favourite trucks could not be displayed"});
+            })
         })
       })
-      .catch(err => {
-          console.log(err)
-        res.status(500).json({error: "favourite trucks could not be displayed"});
-      })
+      
 })
 
 
