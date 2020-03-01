@@ -18,6 +18,7 @@ module.exports = {
     addItemPhotos,
     removeItemPhotos,
     findOperatorTrucks,
+    findByIdTruckFav
     
   };
 
@@ -67,7 +68,12 @@ function findOperatorTrucks(id) {
 function findByIdTruck(id) {
   return db('trucks')
     .where('trucks.id', id)
-    .first()
+    // .first()
+}
+
+function findByIdTruckFav(id) {
+  return db('trucks')
+    .where({id})
 }
 
 function addTruck(truck) {

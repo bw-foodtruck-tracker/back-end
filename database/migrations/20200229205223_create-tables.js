@@ -101,24 +101,13 @@ exports.up = function(knex) {
                 .references('trucks.id')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE')
+            tbl.integer('diner_id')
+                .unsigned()
+                .notNullable()
+                .references('diners.id')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE')
         })
-        .createTable('diners_favouriteTrucks', tbl => {
-          tbl.integer('diner_id')
-              .unsigned()
-              .notNullable()
-              .references('id')
-              .inTable('diners')
-              .onUpdate('CASCADE')
-              .onDelete('CASCADE');
-          tbl.integer('favouriteTrucks_id')
-              .unsigned()
-              .notNullable()
-              .references('id')
-              .inTable('favouriteTrucks')
-              .onUpdate('CASCADE')
-              .onDelete('CASCADE');
-          tbl.primary(['diner_id', 'favouriteTrucks_id']);
-      })
   };
   
   exports.down = function(knex) {
@@ -135,4 +124,3 @@ exports.up = function(knex) {
       
       
   };
-

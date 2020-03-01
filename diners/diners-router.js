@@ -112,31 +112,29 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 
 // Favourite Trucks
 
-router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res,next) => {
+router.post('/:id/favouriteTrucks', restricted, checkRole(), validateTruckId, (req,res) => {
+    Diners.findFavTruckByDinerId(req.body.truck_id)
+    .then(trucks => {
+        const newFavTruck = {
+            truck_id: req.body.truck_id,
+            // truckName: trucks.truckName,
+            // cuisineType: trucks.cuisineType,
+            // imageOfTruck: trucks.imageOfTruck,
+            // customerRatingAvg: trucks.customerRatingAvg,
+            currentLocation: trucks.currentLocation,
 
-    console.log(req.decodedJwt.userid)
-
-    const favTruck= {
-        truck_id: req.params.id,
-        
-    }
-    const newInsert = {
-        diner_id: req.decodedJwt.userid,
-        favouriteTrucks_id: req.params.id
-    }
-
-    Diners.addFavouriteTrucks(favTruck)
-        .then(truck => {
-            next()
-        })
-        Diners.addFavouriteToMany(newInsert)
-            .then(task => {
-                res.status(201).json(task); 
+            diner_id: req.params.id
+        }
+        console.log(newFavTruck)
+        Diners.addFavouriteTrucks(newFavTruck)
+            .then(trucks => {
+                res.status(200).json(trucks)
             })
-        .catch(err => {
-            console.log(err)
-            res.status(500).json({ error: "There was an error while saving the truck to the database" });
+            .catch(err => {
+                res.status(500).json(err.message)
+            })
         })
+    
 })
 
 
@@ -156,15 +154,20 @@ router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavourite
 
 
 router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req,res) => {
-    // console.log(req.truck.truck_id)
+    
+
     console.log(req)
-    Diners.findManytoMany(req.decodedJwt.userid)
+    Diners.findFavouriteTrucksById(req.params.id)
     .then(post => {
-        if(post) {
-            res.status(200).json(post);
-        } else {
-            res.status(400).json({message: "Diner has no favourite trucks"})
-        }
+        const {diner_id} = post[0]
+        const List = post.map(resource => {
+            const {truck_id} = resource
+            return {truck_id}
+        })
+        res.status(200).json({
+            dinerId: diner_id,
+            trucks: List
+        })
       })
       .catch(err => {
           console.log(err)
