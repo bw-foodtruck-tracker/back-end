@@ -49,7 +49,6 @@ router.post('/:id/truck', restricted, checkRole(), validateOperatorId, (req,res)
     console.log(req.body.truckName)
     Operators.findByTruckName(req.body.truckName)
       .then(truck => {
-        console.log(truck)
         if(truck.length > 0) {
           res.status(400).json({ error: "Truck name must be unique" });
         } else {
@@ -75,13 +74,19 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) =>
         currentLocation: req.body.currentLocation,
         departureTime: req.body.departureTime
     }
-  
-    Operators.updateTruck(req.params.id, updateTruck)
-      .then(post => {
-        res.status(200).json(post);
-      })
-      .catch(err => {
-          res.status(500).json({error: "The truck information could not be modified"});
+    Operators.findByTruckName(req.body.truckName)
+      .then(truck => {
+        if(truck.length > 0) {
+          res.status(400).json({ error: "Truck name must be unique" });
+        } else {
+          Operators.updateTruck(req.params.id, updateTruck)
+            .then(post => {
+              res.status(200).json(post);
+            })
+            .catch(err => {
+              res.status(500).json({error: "The truck information could not be modified"});
+            })
+        }
       })
   });
 
