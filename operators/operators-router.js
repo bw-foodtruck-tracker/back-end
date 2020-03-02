@@ -6,25 +6,7 @@ const Diners = require('../diners/diners-model.js')
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-operator.js');
 
-router.get('/:id/CustomerMenuAvg', restricted, checkRole(), (req,res) => {
-  Diners.findByCustomerRatingMenuAvg(req.params.id)
-    .then(avg => {
-      res.status(200).json(Object.values(avg[0])[0])
-    })
-    .catch(err => {
-      res.status(500).json(err)
-    })
-})
 
-router.get('/:id/CustomerTruckAvg', restricted, checkRole(), (req,res) => {
-  Diners.findByCustomerRatingTruckAvg(req.params.id)
-    .then(avg => {
-      res.status(200).json(Object.values(avg[0])[0])
-    })
-    .catch(err => {
-      res.status(500).json(err)
-    })
-})
 
 router.get('/:id', restricted, checkRole(), (req,res) => {
     console.log(req)
@@ -56,19 +38,16 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 
 router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateTruckInfo, (req,res) => {
   
+  const newTruck = {
+    operator_id: req.params.id,
+    truckName: req.body.truckName,
+    imageOfTruck: req.body.imageOfTruck,
+    cuisineType: req.body.cuisineType,
+    currentLocation: req.body.currentLocation,
+    departureTime: req.body.departureTime,
+}
     
     
-      Diners.findByCustomerRatingTruckAvg(req.params.id)
-        .then(avg => {
-          const newTruck = {
-            operator_id: req.params.id,
-            truckName: req.body.truckName,
-            imageOfTruck: req.body.imageOfTruck,
-            cuisineType: req.body.cuisineType,
-            currentLocation: req.body.currentLocation,
-            departureTime: req.body.departureTime,
-            customerRatingAvg: Object.values(avg[0])
-        }
         Operators.findByTruckName(req.body.truckName)
           .then(truck => {
             if(truck.length > 0) {
@@ -83,24 +62,14 @@ router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateT
               })
             }
           })
-        })
 })
 
 
 router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruckInfo,(req, res) => {
-    // const updateTruck = {
-    //     operator_id: req.params.id,
-    //     truckName: req.body.truckName,
-    //     imageOfTruck: req.body.imageOfTruck,
-    //     cuisineType: req.body.cuisineType,
-    //     currentLocation: req.body.currentLocation,
-    //     departureTime: req.body.departureTime
-    // }
-    
+ 
     Diners.findByCustomerRatingTruckAvg(req.params.id)
         .then(avg => {
           const updateTruck = {
-            operator_id: req.params.id,
             truckName: req.body.truckName,
             imageOfTruck: req.body.imageOfTruck,
             cuisineType: req.body.cuisineType,
