@@ -20,7 +20,9 @@ module.exports = {
     removeFavouriteTrucks,
     findFavTruckByDinerId,
     findFavouriteTrucksById2,
-    findByTruckSearch
+    findByTruckSearch,
+    findByCustomerRatingMenuAvg,
+    findByCustomerRatingTruckAvg
   };
 
   function find() {
@@ -50,6 +52,7 @@ function add(user) {
 }
 
 // Customer Rating Truck
+
 
 function findByCustomerRatingId(id) {
   return db('customerRatingTruck')
@@ -103,6 +106,12 @@ function findMenuRatingById(menu_id, diner_id){
 }
 
 
+function findByCustomerRatingMenuAvg(menu_id) {
+  return db('customerRatingMenu as crm')
+    .avg('rating')
+    .where({ menu_id })
+    
+}
 
 function addCustomerRatingMenu(item) {
   return db('customerRatingMenu')
@@ -174,5 +183,12 @@ function removeFavouriteTrucks(id) {
   return db('favouriteTrucks')
     .where('id', id)
     .del();
+}
+
+function findByCustomerRatingTruckAvg(truck_id) {
+  return db('customerRatingtruck as crt')
+    .avg('crt.rating')
+    .where({ truck_id })
+    
 }
 

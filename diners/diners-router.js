@@ -15,6 +15,28 @@ router.get('/:id', (req,res) => {
         
 })
 
+// Customer RatingAVG Truck/Menu
+
+router.get('/:id/CustomerMenuAvg', restricted, checkRole(), (req,res) => {
+  Diners.findByCustomerRatingMenuAvg(req.params.id)
+    .then(avg => {
+      res.status(200).json(Object.values(avg[0])[0])
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
+router.get('/:id/CustomerTruckAvg', restricted, checkRole(), (req,res) => {
+  Diners.findByCustomerRatingTruckAvg(req.params.id)
+    .then(avg => {
+      res.status(200).json(Object.values(avg[0])[0])
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
 
 router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId, validateCustomerRating, (req,res) => {
 
@@ -73,15 +95,17 @@ router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCusto
 
 // Customer Rating ManuItem
 
-router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, validateCustomerRating, (req,res) => {
-
-    console.log(req.decodedJwt.userid)
-
+router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, validateCustomerRating, (req,res, next) => {
+   
+    
     const newRating = {
-        menu_id: req.params.id,
-        diner_id: req.decodedJwt.userid,
-        rating: req.body.rating
+      menu_id: req.params.id,
+      diner_id: req.decodedJwt.userid,
+      rating: req.body.rating,
+
     }
+
+    
     Diners.findMenuRatingById(req.params.id, req.decodedJwt.userid )
       .then(menu => {
         if(menu.length > 0){
@@ -94,7 +118,7 @@ router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, 
         })
         .catch(err => {
             console.log(err)
-            res.status(500).json({ error: "There was an error while saving the item to the database" });
+            res.status(500).json(err.message);
         })
       }
     })

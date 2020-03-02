@@ -1,11 +1,30 @@
 const router = require('express').Router();
 
 const Operators = require('./operators-model');
+const Diners = require('../diners/diners-model.js')
 
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-operator.js');
 
+router.get('/:id/CustomerMenuAvg', restricted, checkRole(), (req,res) => {
+  Diners.findByCustomerRatingMenuAvg(req.params.id)
+    .then(avg => {
+      res.status(200).json(Object.values(avg[0])[0])
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
 
+router.get('/:id/CustomerTruckAvg', restricted, checkRole(), (req,res) => {
+  Diners.findByCustomerRatingTruckAvg(req.params.id)
+    .then(avg => {
+      res.status(200).json(Object.values(avg[0])[0])
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
 
 router.get('/:id', restricted, checkRole(), (req,res) => {
     console.log(req)
@@ -37,57 +56,73 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 
 router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateTruckInfo, (req,res) => {
   
-    const newTruck = {
-        operator_id: req.params.id,
-        truckName: req.body.truckName,
-        imageOfTruck: req.body.imageOfTruck,
-        cuisineType: req.body.cuisineType,
-        currentLocation: req.body.currentLocation,
-        departureTime: req.body.departureTime
-    }
     
-    console.log(req.body.truckName)
-    Operators.findByTruckName(req.body.truckName)
-      .then(truck => {
-        if(truck.length > 0) {
-          res.status(400).json({ error: "Truck name must be unique" });
-        } else {
-          Operators.addTruck(newTruck)
-            .then(truck => {
-                res.status(201).json(truck);
-            })
-            .catch(err => {
-                res.status(500).json({ error: "There was an error while saving the task to the database" });
-          })
+    
+      Diners.findByCustomerRatingTruckAvg(req.params.id)
+        .then(avg => {
+          const newTruck = {
+            operator_id: req.params.id,
+            truckName: req.body.truckName,
+            imageOfTruck: req.body.imageOfTruck,
+            cuisineType: req.body.cuisineType,
+            currentLocation: req.body.currentLocation,
+            departureTime: req.body.departureTime,
+            customerRatingAvg: Object.values(avg[0])
         }
-      })
-    
+        Operators.findByTruckName(req.body.truckName)
+          .then(truck => {
+            if(truck.length > 0) {
+              res.status(400).json({ error: "Truck name must be unique" });
+            } else {
+              Operators.addTruck(newTruck)
+                .then(truck => {
+                    res.status(201).json(truck);
+                })
+                .catch(err => {
+                    res.status(500).json({ error: "There was an error while saving the task to the database" });
+              })
+            }
+          })
+        })
 })
 
 
 router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruckInfo,(req, res) => {
-    const updateTruck = {
-        operator_id: req.params.id,
-        truckName: req.body.truckName,
-        imageOfTruck: req.body.imageOfTruck,
-        cuisineType: req.body.cuisineType,
-        currentLocation: req.body.currentLocation,
-        departureTime: req.body.departureTime
-    }
-    Operators.findByTruckName(req.body.truckName)
-      .then(truck => {
-        if(truck.length > 0) {
-          res.status(400).json({ error: "Truck name must be unique" });
-        } else {
-          Operators.updateTruck(req.params.id, updateTruck)
-            .then(post => {
-              res.status(200).json(post);
-            })
-            .catch(err => {
-              res.status(500).json({error: "The truck information could not be modified"});
-            })
+    // const updateTruck = {
+    //     operator_id: req.params.id,
+    //     truckName: req.body.truckName,
+    //     imageOfTruck: req.body.imageOfTruck,
+    //     cuisineType: req.body.cuisineType,
+    //     currentLocation: req.body.currentLocation,
+    //     departureTime: req.body.departureTime
+    // }
+    
+    Diners.findByCustomerRatingTruckAvg(req.params.id)
+        .then(avg => {
+          const updateTruck = {
+            operator_id: req.params.id,
+            truckName: req.body.truckName,
+            imageOfTruck: req.body.imageOfTruck,
+            cuisineType: req.body.cuisineType,
+            currentLocation: req.body.currentLocation,
+            departureTime: req.body.departureTime,
+            customerRatingAvg: Object.values(avg[0])[0]
         }
-      })
+        Operators.findByTruckName(req.body.truckName)
+          .then(truck => {
+            if(truck.length > 0) {
+              res.status(400).json({ error: "Truck name must be unique" });
+            } else {
+              Operators.updateTruck(req.params.id, updateTruck)
+                .then(post => {
+                  res.status(200).json(post);
+                })
+                .catch(err => {
+                  res.status(500).json({error: "The truck information could not be modified"});
+                })
+              }
+          })
+        })   
   });
 
 router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) => {
@@ -125,20 +160,26 @@ router.post('/:id/menu', restricted, checkRole(), validateMenuInfo,(req,res) => 
 })
 
 router.put('/:id/menu', restricted, checkRole(), validateMenuId, validateMenuInfo, (req, res) => {
-    const updateMenuItem = {
-        itemName: req.body.itemName,
-        itemDescription: req.body.itemDescription,
-        itemPrice: req.body.itemPrice
-    }
-  
-    Operators.updateMenuItem(req.params.id, updateMenuItem)
-      .then(post => {
-        res.status(200).json(post);
-      })
-      .catch(err => {
-          console.log(err)
-          res.status(500).json({error: "The menu information could not be modified"});
-      })
+    
+    Diners.findByCustomerRatingMenuAvg(req.params.id)
+        .then(avg => {
+          console.log(Object.values(avg[0])[0])
+          const updateMenuItem = {
+            itemName: req.body.itemName,
+            itemDescription: req.body.itemDescription,
+            itemPrice: req.body.itemPrice,
+            customerRatingAvg: Object.values(avg[0])[0]
+        }
+        console.log(updateMenuItem)
+        Operators.updateMenuItem(req.params.id, updateMenuItem)
+          .then(post => {
+            res.status(200).json(post);
+          })
+          .catch(err => {
+              console.log(err)
+              res.status(500).json({error: "The menu information could not be modified"});
+          })
+      })   
   });
 
 router.delete('/:id/menu', restricted, checkRole(), validateMenuId, (req, res) => {
