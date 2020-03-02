@@ -100,6 +100,8 @@ router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomer
       })
   });
 
+  
+
 router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
     Diners.removeCustomerRatingTruck(req.params.id)
       .then(post => {
@@ -170,8 +172,32 @@ router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerM
     }
   
     Diners.updateCustomerRatingMenu(req.params.id, newRating)
-      .then(item => {
-        res.status(200).json(item);
+      .then(item => { 
+        Diners.findByCustomerRatingMenuAvg(req.params.id)
+          .then(avg => {
+            const updateMenu = {
+              customerRatingAvg: Object.values(avg[0])[0]
+            }
+            Operators.updateMenuItem(req.params.id, updateMenu)
+            .then(post => {
+              Diners.findByCustomerRatingMenuAvg(req.params.id)
+                .then(response => {
+                  res.status(201).json({
+                    rating: item,
+                    MenuItemAvg: Object.values(response[0])[0]
+                  })
+                })
+              
+            }) 
+              .catch(err => {
+                  console.log(err)
+                  res.status(500).json({error: "The menu information could not be modified"});
+              })
+            
+          })
+          .catch(err => {
+            res.status(500).json(err)
+          })
       })
       .catch(err => {
           console.log(err)
