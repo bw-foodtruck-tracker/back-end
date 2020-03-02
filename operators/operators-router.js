@@ -35,6 +35,9 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 
 // TRUCK CRUD
 
+
+
+
 router.get('/:id/truck', restricted, checkRole(), (req,res) => {
   Operators.findCustomerRatingTruck(req.params.id)
     .then(rating => {

@@ -55,7 +55,25 @@ router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId
       } else {
         Diners.addCustomerRatingTruck(newRating)
         .then(item => {
-            res.status(201).json(item);
+          Diners.findByCustomerRatingTruckAvg(req.params.id)
+              .then(avg => {
+                const updateTruck = {
+                  customerRatingAvg: Object.values(avg[0])[0]
+                }
+                Operators.updateTruck(req.params.id, updateTruck)
+                  .then(post => {
+                    res.status(201).json({
+                      rating: item,
+                      truckAvg: Object.values(avg[0])[0]
+                    })
+                  })
+                  .catch(err => {
+                    res.status(500).json({error: "The truck information could not be modified"});
+                  })                
+              })
+              .catch(err => {
+                res.status(500).json(err)
+              })
         })
         .catch(err => {
             console.log(err)
@@ -63,10 +81,9 @@ router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId
         })
       }
     })
-      
-
-    
 })
+
+
 
 router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
     const newRating = {
@@ -95,6 +112,8 @@ router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCusto
 
 // Customer Rating ManuItem
 
+
+
 router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, validateCustomerRating, (req,res, next) => {
    
     
@@ -113,8 +132,27 @@ router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, 
       } else {
         Diners.addCustomerRatingMenu(newRating)
         .then(item => {
-            // console.log(item)
-            res.status(201).json(item);
+          Diners.findByCustomerRatingMenuAvg(req.params.id)
+          .then(avg => {
+            const updateMenu = {
+              customerRatingAvg: Object.values(avg[0])[0]
+            }
+            Operators.updateMenuItem(req.params.id, updateMenu)
+              .then(post => {
+                res.status(201).json({
+                  rating: item,
+                  MenuItemAvg: Object.values(avg[0])[0]
+                })
+              })
+              .catch(err => {
+                  console.log(err)
+                  res.status(500).json({error: "The menu information could not be modified"});
+              })
+            
+          })
+          .catch(err => {
+            res.status(500).json(err)
+          })
         })
         .catch(err => {
             console.log(err)
