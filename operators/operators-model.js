@@ -6,7 +6,6 @@ module.exports = {
     findBy,
     findById,
     findByIdTruckAll,
-    findByIdTruckAll1,
     findByIdTruck,
     findByTruckName,
     addTruck,
@@ -22,6 +21,9 @@ module.exports = {
     removeItemPhotos,
     findOperatorTrucks,
     findByIdTruckFav,
+
+    findCustomerRatingTruck,
+    findCustomerRatingMenu
   };
 
   function find() {
@@ -75,12 +77,18 @@ function findByIdTruck(id) {
 //     // .first()
 // }
 
-function findByIdTruckAll1(id) {
-  return db('menuItems as mi')
-    .join('trucks as t', 't.id', 'mi.truck_id')
-    .where('mi.truck_id', id)
-    .select('t.*')
-    
+
+
+function findCustomerRatingTruck(id) {
+  return db('customerRatingTruck as crt')
+    .join('trucks as t', 't.id', 'crt.truck_id')
+    .where('crt.truck_id', id)
+}
+
+function findCustomerRatingMenu(id) {
+  return db('customerRatingMenu as crm')
+    .join('trucks as t', 't.id', 'crm.menu_id')
+    .where('crm.menu_id', id)
 }
 
 function findByIdTruckAll(id) {
