@@ -5,6 +5,8 @@ module.exports = {
     find,
     findBy,
     findById,
+    findByIdTruckAll,
+    findByIdTruckAll1,
     findByIdTruck,
     findByTruckName,
     addTruck,
@@ -32,11 +34,6 @@ module.exports = {
         .where(search)
   }
 
-//   function findByDepartment(search) {
-//     return db('users')
-//       .select('id', 'username', 'password')
-//       .where('users.department', search)
-// }
 
   function findById(id) {
     return db('operators')
@@ -69,6 +66,28 @@ function findByIdTruck(id) {
   return db('trucks')
     .where('trucks.id', id)
     .first()
+}
+
+// function findByIdTruckAll(id) {
+//   return db('trucks as t')
+//     .join('menuItems as mi', 'mi.truck_id', 't.id')
+//     .where('trucks.id', id)
+//     // .first()
+// }
+
+function findByIdTruckAll1(id) {
+  return db('menuItems as mi')
+    .join('trucks as t', 't.id', 'mi.truck_id')
+    .where('mi.truck_id', id)
+    .select('t.*')
+    
+}
+
+function findByIdTruckAll(id) {
+  return db('itemPhotos as ip')
+    .join('menuItems as mi', 'mi.id', 'ip.menu_id')
+    .where('ip.menu_id', id)
+    
 }
 
 function findByTruckName(search) {

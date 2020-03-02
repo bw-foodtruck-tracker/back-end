@@ -154,13 +154,12 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 // Favourite Trucks
 
 router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (req,res, next) => {
-
-    
     Operators.findByIdTruck(req.body.truck_id)
     .then(trucks => {
         const newFavTruck = {
             truck_id: req.body.truck_id,
             diner_id: req.params.id,
+            dinerName: username,
             truckName: trucks.truckName,
             cuisineType: trucks.cuisineType,
             imageOfTruck: trucks.imageOfTruck,
@@ -219,7 +218,7 @@ router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTru
         Diners.findById(req.params.id)
             .then(item => {
                 res.status(200).json({
-                    username: item.username,
+                    dinerName: item.username,
                     dinerId: diner_id,
                     trucks: List
             })

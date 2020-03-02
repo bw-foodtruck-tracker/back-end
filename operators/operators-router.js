@@ -35,6 +35,41 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 
 // TRUCK CRUD
 
+router.get('/:id/truck', (req,res) => {
+  Operators.findByIdTruckAll(req.params.id)
+    .then(menu => {
+      const MenuList = menu.map(menu => {
+        const {itemName, itemDescription, itemPrice, customerRatingAvg} = menu
+        return {itemName, itemDescription, itemPrice, customerRatingAvg}
+      })
+      // const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu[0]
+      const PhotoList = menu.map(menu => {
+        const {image, menu_id} = menu
+        return {image, menu_id} 
+      })
+    Operators.findByIdTruck(req.params.id)
+      .then(truck => {
+        res.status(201).json({
+          truck: truck.truckName,
+          truckId: truck.id,
+          imageOfTruck: truck.imageOfTruck,
+          cuisineType: truck.cuisineType,
+          Truck_customerRatingAvg: truck.customerRatingAvg,
+          currentLocation: truck.currentLocation,
+          departureTime: truck.departureTime,
+          operator_id: truck.operator_id,
+          menu:{
+            menuList: MenuList,
+            PhotoList: PhotoList
+          }
+        })
+      })
+      })
+    .catch(err => {
+      res.status(500).json(err.message)
+    })
+})
+
 
 router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateTruckInfo, (req,res) => {
   
