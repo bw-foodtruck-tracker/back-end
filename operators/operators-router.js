@@ -153,7 +153,7 @@ router.delete('/:id/menu', restricted, checkRole(), validateMenuId, (req, res) =
 
 // ITEMPHOTOS CRUD
 
-router.post('/:id/item-photo', restricted, checkRole(), validateMenuId, (req,res) => {
+router.post('/:id/item-photo', restricted, checkRole(), validateMenuId, validatePhotoInfo, (req,res) => {
 
     const newItemPhoto = {
         menu_id: req.params.id,
@@ -171,7 +171,7 @@ router.post('/:id/item-photo', restricted, checkRole(), validateMenuId, (req,res
         })
 })
 
-router.put('/:id/item-photo', restricted, checkRole(), validateItemPhotoId, (req, res) => {
+router.put('/:id/item-photo', restricted, checkRole(), validateItemPhotoId, validatePhotoInfo, (req, res) => {
     const updatePhoto = {
         image: req.body.image
     }
@@ -292,6 +292,15 @@ function validateItemPhotoId(req, res, next) {
       .catch(err => {
         res.status(500).json({message: 'exception error'});
       })
+}
+
+function validatePhotoInfo(req, res, next) {
+  const postData = req.body;
+  if(postData.image === "") {
+      res.status(400).json({ message: "image can not can not be empty" });
+  } else {
+      next();
+  }
 }
 
 module.exports = router;

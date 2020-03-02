@@ -10,10 +10,12 @@ module.exports = {
     updateCustomerRatingTruck,
     removeCustomerRatingTruck,
     findByCustomerRatingMenuItemId,
+    findMenuRatingById,
     addCustomerRatingMenu,
     updateCustomerRatingMenu,
     removeCustomerRatingMenu,
     findFavouriteTrucksById,
+    findTruckRatingById,
     addFavouriteTrucks,
     removeFavouriteTrucks,
     findFavTruckByDinerId,
@@ -55,6 +57,12 @@ function findByCustomerRatingId(id) {
     .first();
 }
 
+function findTruckRatingById(truck_id, diner_id){
+  return db('customerRatingTruck as crt')
+
+  .where({truck_id})
+  .where('diner_id', diner_id )
+}
 
 function addCustomerRatingTruck(item) {
   return db('customerRatingTruck')
@@ -86,6 +94,14 @@ function findByCustomerRatingMenuItemId(id) {
     .where({ id })
     .first();
 }
+
+function findMenuRatingById(menu_id, diner_id){
+  return db('customerRatingMenu as crm')
+
+  .where({menu_id})
+  .where('diner_id', diner_id )
+}
+
 
 
 function addCustomerRatingMenu(item) {
@@ -133,6 +149,7 @@ function findFavouriteTrucksById2(truck_id, diner_id) {
     .where({truck_id})
     .where('diner_id', diner_id )
 }
+
 
 function findFavTruckByDinerId(id) {
   return db('favouriteTrucks')

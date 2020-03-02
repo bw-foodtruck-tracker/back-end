@@ -16,7 +16,7 @@ router.get('/:id', (req,res) => {
 })
 
 
-router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId, (req,res) => {
+router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId, validateCustomerRating, (req,res) => {
 
     console.log(req.decodedJwt.userid)
 
@@ -26,18 +26,27 @@ router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId
         rating: req.body.rating
     }
 
-    Diners.addCustomerRatingTruck(newRating)
+    Diners.findTruckRatingById(req.params.id, req.decodedJwt.userid )
+      .then(truck => {
+        if(truck.length > 0){
+          res.status(400).json({error: "you have already rated this truck"});
+      } else {
+        Diners.addCustomerRatingTruck(newRating)
         .then(item => {
-            // console.log(item)
             res.status(201).json(item);
         })
         .catch(err => {
             console.log(err)
             res.status(500).json({ error: "There was an error while saving the item to the database" });
         })
+      }
+    })
+      
+
+    
 })
 
-router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, (req, res) => {
+router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
     const newRating = {
         rating: req.body.rating
     }
@@ -52,7 +61,7 @@ router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomer
       })
   });
 
-router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, (req, res) => {
+router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
     Diners.removeCustomerRatingTruck(req.params.id)
       .then(post => {
         res.status(200).json(post);
@@ -64,7 +73,7 @@ router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCusto
 
 // Customer Rating ManuItem
 
-router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, (req,res) => {
+router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, validateCustomerRating, (req,res) => {
 
     console.log(req.decodedJwt.userid)
 
@@ -73,8 +82,12 @@ router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, 
         diner_id: req.decodedJwt.userid,
         rating: req.body.rating
     }
-
-    Diners.addCustomerRatingMenu(newRating)
+    Diners.findMenuRatingById(req.params.id, req.decodedJwt.userid )
+      .then(menu => {
+        if(menu.length > 0){
+          res.status(400).json({error: "you have already rated this menu"});
+      } else {
+        Diners.addCustomerRatingMenu(newRating)
         .then(item => {
             // console.log(item)
             res.status(201).json(item);
@@ -83,9 +96,13 @@ router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, 
             console.log(err)
             res.status(500).json({ error: "There was an error while saving the item to the database" });
         })
+      }
+    })
+
+    
 })
 
-router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerMenuId, (req, res) => {
+router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerMenuId, validateCustomerRating, (req, res) => {
     const newRating = {
         rating: req.body.rating
     }
@@ -192,7 +209,7 @@ router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTru
 })
 
 
-// Validate Id Truck
+// ValidateCustomer Rating
 
 function validateCustomerRatingId(req, res, next) {
     const {id} = req.params;
@@ -209,6 +226,20 @@ function validateCustomerRatingId(req, res, next) {
         res.status(500).json({message: 'exception error'});
       })
 }
+
+
+function validateCustomerRating(req, res, next) {
+  const postData = req.body;
+  if(!postData.rating || postData.rating === 0) {
+    res.status(400).json({message: "please input a rating between 1 and 5."})
+  } else if (postData.rating > 5 || postData.rating < 1){
+      res.status(400).json({ message: 'please input a rating between 1 and 5.'})
+  } else {
+      next();
+  }
+}
+
+
 
 function validateTruckId(req, res, next) {
     const {id} = req.params;
