@@ -4,7 +4,25 @@ module.exports = {
     add,
     find,
     findBy,
-    findById
+    findById,
+    findByCustomerRatingId,
+    addCustomerRatingTruck,
+    updateCustomerRatingTruck,
+    removeCustomerRatingTruck,
+    findByCustomerRatingMenuItemId,
+    findMenuRatingById,
+    addCustomerRatingMenu,
+    updateCustomerRatingMenu,
+    removeCustomerRatingMenu,
+    findFavouriteTrucksById,
+    findTruckRatingById,
+    addFavouriteTrucks,
+    removeFavouriteTrucks,
+    findFavTruckByDinerId,
+    findFavouriteTrucksById2,
+    findByTruckSearch,
+    findByCustomerRatingMenuAvg,
+    findByCustomerRatingTruckAvg
   };
 
   function find() {
@@ -13,7 +31,6 @@ module.exports = {
 
   function findBy(search) {
       return db('diners')
-        .select('id', 'username', 'password')
         .where(search)
   }
 
@@ -33,3 +50,145 @@ function add(user) {
             return findById(ids[0]);
           });
 }
+
+// Customer Rating Truck
+
+
+function findByCustomerRatingId(id) {
+  return db('customerRatingTruck')
+    .where({ id })
+    .first();
+}
+
+function findTruckRatingById(truck_id, diner_id){
+  return db('customerRatingTruck as crt')
+
+  .where({truck_id})
+  .where('diner_id', diner_id )
+}
+
+function addCustomerRatingTruck(item) {
+  return db('customerRatingTruck')
+      .insert(item)
+      .then(ids => {
+          return findByCustomerRatingId(ids[0]);
+        });
+}
+
+function updateCustomerRatingTruck(id, changes) {
+  return db('customerRatingTruck')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByCustomerRatingId(id);
+    });
+}
+
+function removeCustomerRatingTruck(id) {
+  return db('customerRatingTruck')
+    .where('id', id)
+    .del();
+}
+
+// Customer Rating MenuItem
+
+function findByCustomerRatingMenuItemId(id) {
+  return db('customerRatingMenu')
+    .where({ id })
+    .first();
+}
+
+function findMenuRatingById(menu_id, diner_id){
+  return db('customerRatingMenu as crm')
+
+  .where({menu_id})
+  .where('diner_id', diner_id )
+}
+
+
+function findByCustomerRatingMenuAvg(menu_id) {
+  return db('customerRatingMenu as crm')
+    .avg('rating')
+    .where({ menu_id })
+    
+}
+
+function addCustomerRatingMenu(item) {
+  return db('customerRatingMenu')
+      .insert(item)
+      .then(ids => {
+          return findByCustomerRatingMenuItemId(ids[0]);
+        });
+}
+
+function updateCustomerRatingMenu(id, changes) {
+  return db('customerRatingMenu')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByCustomerRatingMenuItemId(id);
+    });
+}
+
+function removeCustomerRatingMenu(id) {
+  return db('customerRatingMenu')
+    .where('id', id)
+    .del();
+}
+
+// Favourite Trucks
+
+function findByTruckSearch(search) {
+  return db('favouriteTrucks')
+    .where(search)
+}
+
+function findFavouriteTrucksById(diner_id) {
+  return db('favouriteTrucks')
+    .where({diner_id})
+    // .first();
+}
+
+
+
+function findFavouriteTrucksById2(truck_id, diner_id) {
+  return db('favouriteTrucks as ft')
+    
+    
+    .where({truck_id})
+    .where('diner_id', diner_id )
+}
+
+
+function findFavTruckByDinerId(id) {
+  return db('favouriteTrucks')
+  
+    
+    .where({id})
+}
+
+
+
+
+function addFavouriteTrucks(item) {
+  return db('favouriteTrucks')
+      .insert(item)
+      // .then(ids => {
+      //     return findFavouriteTrucksById(ids[0]);
+      //   });
+}
+
+
+function removeFavouriteTrucks(id) {
+  return db('favouriteTrucks')
+    .where('id', id)
+    .del();
+}
+
+function findByCustomerRatingTruckAvg(truck_id) {
+  return db('customerRatingtruck as crt')
+    .avg('crt.rating')
+    .where({ truck_id })
+    
+}
+

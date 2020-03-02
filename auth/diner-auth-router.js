@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 
 const Users = require('../diners/diners-model');
 
+const OpUsers = require('../operators/operators-model');
+
 
 router.post('/register', validateUserInfo, checkForUsername, checkPassword, checkEmail, (req, res) => {
     const user = req.body;
@@ -27,7 +29,6 @@ router.post('/register', validateUserInfo, checkForUsername, checkPassword, chec
 
 /// Check for Username
 
-
 function checkForUsername(req, res, next) {
     let { username } = req.body;
     Users.findBy({username})
@@ -36,9 +37,17 @@ function checkForUsername(req, res, next) {
             if(item) {
                 res.status(400).json({error: "username already exists"})
             } else {
-                next();
+                OpUsers.findBy({username})  
+                    .first()
+                    .then(item => {
+                        if(item) {
+                            res.status(400).json({error: "username already exists"})
+                        } else {
+                            next();
+                        }
+                })  
             }
-    })    
+    })
 }
 
 /// Validate UserInfo
