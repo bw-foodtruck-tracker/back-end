@@ -35,7 +35,7 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 // TRUCK CRUD
 
 
-router.post('/:id/truck', restricted, checkRole(), validateOperatorId, (req,res) => {
+router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateTruckInfo, (req,res) => {
   
     const newTruck = {
         operator_id: req.params.id,
@@ -65,7 +65,7 @@ router.post('/:id/truck', restricted, checkRole(), validateOperatorId, (req,res)
 })
 
 
-router.put('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) => {
+router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruckInfo,(req, res) => {
     const updateTruck = {
         operator_id: req.params.id,
         truckName: req.body.truckName,
@@ -102,7 +102,7 @@ router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res)
 
 // MENU CRUD
 
-router.post('/:id/menu', restricted, checkRole(), (req,res) => {
+router.post('/:id/menu', restricted, checkRole(), validateMenuInfo,(req,res) => {
 
     const newMenuItem = {
         truck_id: req.params.id,
@@ -124,7 +124,7 @@ router.post('/:id/menu', restricted, checkRole(), (req,res) => {
         })
 })
 
-router.put('/:id/menu', restricted, checkRole(), validateMenuId, (req, res) => {
+router.put('/:id/menu', restricted, checkRole(), validateMenuId, validateMenuInfo, (req, res) => {
     const updateMenuItem = {
         itemName: req.body.itemName,
         itemDescription: req.body.itemDescription,
@@ -216,6 +216,8 @@ function validateOperatorId(req, res, next) {
       })
 }
 
+// Validate Menu
+
 function validateMenuId(req, res, next) {
     const {id} = req.params;
     Operators.findByIdMenu(id)
@@ -232,6 +234,23 @@ function validateMenuId(req, res, next) {
       })
 }
 
+function validateMenuInfo(req, res, next) {
+  const postData = req.body;
+  if(postData.itemName === "") {
+      res.status(400).json({ message: "item name can not be empty" });
+  }  else if (!postData.itemDescription && !postData.itemPrice) {
+      res.status(400).json({ message: 'missing item description and item price field'})
+  } else if (!postData.itemDescription) {
+      res.status(400).json({ message: 'missing item description field'})
+  } else if (!postData.itemPrice){
+      res.status(400).json({ message: 'missing item price field'})
+  } else {
+      next();
+  }
+}
+
+// Validate Truck
+
 function validateTruckId(req, res, next) {
     const {id} = req.params;
     Operators.findByIdTruck(id)
@@ -247,6 +266,17 @@ function validateTruckId(req, res, next) {
         res.status(500).json({message: 'exception error'});
       })
 }
+
+function validateTruckInfo(req, res, next) {
+  const postData = req.body;
+   if (postData.truckName === "" || !postData.imageOfTruck || !postData.imageOfTruck || !postData.cuisineType || !postData.currentLocation || !postData.departureTime) {
+      res.status(400).json({ message: 'missing field/s'})
+  }  else {
+      next();
+  }
+}
+
+//Validate Photo
 
 function validateItemPhotoId(req, res, next) {
     const {id} = req.params;
