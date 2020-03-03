@@ -56,8 +56,8 @@ router.get('/:id/truck', restricted, checkRole(), (req,res) => {
           Operators.findByIdTruckAll(req.params.id)
             .then(menu => {
               const MenuList = menu.map(menu => {
-                const {itemName, itemDescription, itemPrice, customerRatingAvg} = menu
-                return {itemName, itemDescription, itemPrice, customerRatingAvg}
+                const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu
+                return {itemName, itemDescription, itemPrice, customerRatingAvg, id}
               })
               // const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu[0]
               const PhotoList = menu.map(menu => {
