@@ -22,7 +22,7 @@ module.exports = {
     findFavouriteTrucksById2,
     findByTruckSearch,
     findByCustomerRatingMenuAvg,
-    findByCustomerRatingTruckAvg
+    findByCustomerRatingTruckAvg,
   };
 
   function find() {
@@ -191,4 +191,6 @@ function findByCustomerRatingTruckAvg(truck_id) {
     .where({ truck_id })
     
 }
+
+
 
