@@ -207,7 +207,7 @@ router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, 
               })
               .catch(err => {
                   console.log(err)
-                  res.status(500).json({error: "The menu information could not be modified"});
+                  res.status(500).json(err.message);
               })
             
           })
