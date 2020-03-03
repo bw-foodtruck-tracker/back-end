@@ -6,6 +6,47 @@ const Operators = require('../operators/operators-model.js');
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-diner.js');
 
+// Get Diner
+
+
+router.get('/:id', restricted, checkRole(), validateDinerId, (req,res) => {
+  Diners.findByIdDiner(req.params.id)
+    .then(diner => {
+      res.status(200).json(diner)
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
+router.delete('/:id/', restricted, checkRole(), validateDinerId, (req, res) => {
+  Diners.removeDiner(req.params.id)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+      res.status(500).json({error: "The diner could not be removed"});
+    })
+});
+
+
+router.put('/:id/', restricted, checkRole(), validateDinerId, validateUserInfo, (req, res) => {
+  const updateDiner = {
+      username: req.body.username,
+      email: req.body.email,
+      currentLocation: req.body.currentLocation
+  }
+
+  Diners.updateDiner(req.params.id, updateDiner)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({error: "The diner could not be modified"});
+    })
+});
+
 
 // Customer RatingAVG Truck/Menu
 
@@ -14,7 +55,7 @@ const checkRole = require('../auth/check-role-middleware-diner.js');
 router.get('/:id/CustomerMenuAvg', restricted, checkRole(), (req,res) => {
   Diners.findByCustomerRatingMenuAvg(req.params.id)
     .then(avg => {
-      res.status(200).json(Object.values(avg[0])[0])
+      res.json(Object.values(avg[0])[0])
     })
     .catch(err => {
       res.status(500).json(err)
@@ -77,26 +118,50 @@ router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId
     })
 })
 
-
-
+ 
 router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
     const newRating = {
         rating: req.body.rating
     }
   
     Diners.updateCustomerRatingTruck(req.params.id, newRating)
-      .then(post => {
-        res.status(200).json(post);
-      })
-      .catch(err => {
-          console.log(err)
-          res.status(500).json({error: "The rating could not be updated"});
-      })
-  });
+    .then(item => { 
+      Diners.findByCustomerRatingTruckAvg(req.params.id)
+        .then(avg => {
+          const updateTruck = {
+            customerRatingAvg: Object.values(avg[0])[0]
+          }
+          Operators.updateTruck(req.params.id, updateTruck)
+          .then(post => {
+            Diners.findByCustomerRatingTruckAvg(req.params.id)
+              .then(response => {
+                res.status(201).json({
+                  rating: item,
+                  MenuTruckAvg: Object.values(response[0])[0]
+                })
+              })
+            
+          }) 
+            .catch(err => {
+                console.log(err)
+                res.status(500).json({error: "The truck information could not be modified"});
+            })
+          
+        })
+        .catch(err => {
+          res.status(500).json(err)
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({error: "The rating could not be updated"});
+    })
+});
+      
 
   
 
-router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
+router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, (req, res) => {
     Diners.removeCustomerRatingTruck(req.params.id)
       .then(post => {
         res.status(200).json(post);
@@ -165,6 +230,9 @@ router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerM
         rating: req.body.rating
     }
   
+ 
+        
+
     Diners.updateCustomerRatingMenu(req.params.id, newRating)
       .then(item => { 
         Diners.findByCustomerRatingMenuAvg(req.params.id)
@@ -391,7 +459,7 @@ function validateFavouriteTruckId(req, res, next) {
       })
 }
 
-// Check for Duplicate Favourite Truck
+// Validate Diner
 
 function validateDinerId(req, res, next) {
     const {id} = req.params;
@@ -407,6 +475,21 @@ function validateDinerId(req, res, next) {
       .catch(err => {
         res.status(500).json({message: 'exception error'});
       })
+}
+
+function validateUserInfo(req, res, next) {
+  const postData = req.body;
+  if(postData.username === "") {
+      res.status(400).json({ message: "username can not be empty" });
+  }  else if (!postData.currentLocation && !postData.email) {
+      res.status(400).json({ message: 'missing password and location field'})
+  } else if (!postData.email) {
+      res.status(400).json({ message: 'missing email field'})
+  } else if (!postData.currentLocation){
+      res.status(400).json({ message: 'missing location field'})
+  } else {
+      next();
+  }
 }
 
 

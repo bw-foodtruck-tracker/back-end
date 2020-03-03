@@ -5,6 +5,9 @@ module.exports = {
     find,
     findBy,
     findById,
+    findByIdDiner,
+    updateDiner,
+    removeDiner,
     findByCustomerRatingId,
     addCustomerRatingTruck,
     updateCustomerRatingTruck,
@@ -34,7 +37,11 @@ module.exports = {
         .where(search)
   }
 
-
+  function findByIdDiner(id) {
+    return db('diners as d')
+      .select('d.username', 'd.id', 'd.email', 'd.currentLocation', 'd.role')
+      .where({ id })
+  }
 
   function findById(id) {
     return db('diners')
@@ -49,6 +56,21 @@ function add(user) {
         .then(ids => {
             return findById(ids[0]);
           });
+}
+
+function updateDiner(id, changes) {
+  return db('diners')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByIdDiner(id);
+    });
+}
+
+function removeDiner(id) {
+  return db('diners')
+    .where('id', id)
+    .del();
 }
 
 // Customer Rating Truck

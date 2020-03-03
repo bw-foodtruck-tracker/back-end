@@ -5,6 +5,8 @@ module.exports = {
     find,
     findBy,
     findById,
+    updateOperator,
+    removeOperator,
     findByIdTruckAll,
     findByIdTruck,
     findByTruckName,
@@ -55,12 +57,22 @@ function add(user) {
           });
 }
 
-function findOperatorTrucks(id) {
-  return db('trucks as t')
-    .join('operators as o', 'o.id', 't.operator_id')
-    .select('t.*')
-    .where('t.operator_id', id)
+function updateOperator(id, changes) {
+  return db('operators')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findById(id);
+    });
 }
+
+function removeOperator(id) {
+  return db('operators')
+    .where('id', id)
+    .del();
+}
+
+
 
 // Truck CRUD
 
@@ -68,6 +80,13 @@ function findByIdTruck(id) {
   return db('trucks')
     .where('trucks.id', id)
     .first()
+}
+
+function findOperatorTrucks(id) {
+  return db('trucks as t')
+    .join('operators as o', 'o.id', 't.operator_id')
+    .select('t.*')
+    .where('t.operator_id', id)
 }
 
 // function findByIdTruckAll(id) {
@@ -163,6 +182,8 @@ function removeMenuItem(id) {
     .del();
 }
 
+
+
 // itemPhotos CRUD
 
 function findByIdItemPhotos(id) {
@@ -170,6 +191,7 @@ function findByIdItemPhotos(id) {
     .where('itemPhotos.id', id)
     .first()
 }
+
 
 function addItemPhotos(item) {
   return db('itemPhotos')
