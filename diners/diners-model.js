@@ -194,11 +194,13 @@ function findFavTruckByDinerId(id) {
 
 function addFavouriteTrucks(item) {
   return db('favouriteTrucks')
-      .insert(item, 'id')
+      .insert(item)
       .then(ids => {
           return findFavouriteTrucksById(ids[0]);
         });
 }
+
+
 
 
 function removeFavouriteTrucks(id) {
