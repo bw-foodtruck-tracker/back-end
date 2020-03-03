@@ -77,20 +77,20 @@ function removeDiner(id) {
 
 
 function findByCustomerRatingId(id) {
-  return db('customerRatingTruck')
+  return db('customer_rating_truck')
     .where({ id })
     .first();
 }
 
 function findTruckRatingById(truck_id, diner_id){
-  return db('customerRatingTruck as crt')
+  return db('customer_rating_truck as crt')
 
   .where({truck_id})
   .where('diner_id', diner_id )
 }
 
 function addCustomerRatingTruck(item) {
-  return db('customerRatingTruck')
+  return db('customer_rating_truck')
       .insert(item, 'id')
       .then(ids => {
           return findByCustomerRatingId(ids[0]);
@@ -98,7 +98,7 @@ function addCustomerRatingTruck(item) {
 }
 
 function updateCustomerRatingTruck(id, changes) {
-  return db('customerRatingTruck')
+  return db('customer_rating_truck')
     .where({ id })
     .update(changes)
     .then(() => {
@@ -107,7 +107,7 @@ function updateCustomerRatingTruck(id, changes) {
 }
 
 function removeCustomerRatingTruck(id) {
-  return db('customerRatingTruck')
+  return db('customer_rating_truck')
     .where('id', id)
     .del();
 }
@@ -115,13 +115,13 @@ function removeCustomerRatingTruck(id) {
 // Customer Rating MenuItem
 
 function findByCustomerRatingMenuItemId(id) {
-  return db('customerRatingMenu')
+  return db('customer_rating_menu')
     .where({ id })
     .first();
 }
 
 function findMenuRatingById(menu_id, diner_id){
-  return db('customerRatingMenu as crm')
+  return db('customer_rating_menu as crm')
 
   .where({menu_id})
   .where('diner_id', diner_id )
@@ -129,14 +129,14 @@ function findMenuRatingById(menu_id, diner_id){
 
 
 function findByCustomerRatingMenuAvg(menu_id) {
-  return db('customerRatingMenu as crm')
+  return db('customer_rating_menu as crm')
     .avg('rating')
     .where({ menu_id })
     
 }
 
 function addCustomerRatingMenu(item) {
-  return db('customerRatingMenu')
+  return db('customer_rating_menu')
       .insert(item, 'id')
       .then(ids => {
           return findByCustomerRatingMenuItemId(ids[0]);
@@ -144,7 +144,7 @@ function addCustomerRatingMenu(item) {
 }
 
 function updateCustomerRatingMenu(id, changes) {
-  return db('customerRatingMenu')
+  return db('customer_rating_menu')
     .where({ id })
     .update(changes)
     .then(() => {
@@ -153,7 +153,7 @@ function updateCustomerRatingMenu(id, changes) {
 }
 
 function removeCustomerRatingMenu(id) {
-  return db('customerRatingMenu')
+  return db('customer_rating_menu')
     .where('id', id)
     .del();
 }
@@ -161,12 +161,12 @@ function removeCustomerRatingMenu(id) {
 // Favourite Trucks
 
 function findByTruckSearch(search) {
-  return db('favouriteTrucks')
+  return db('favourite_trucks')
     .where(search)
 }
 
 function findFavouriteTrucksById(diner_id) {
-  return db('favouriteTrucks')
+  return db('favourite_trucks')
     .where({diner_id})
     // .first();
 }
@@ -174,7 +174,7 @@ function findFavouriteTrucksById(diner_id) {
 
 
 function findFavouriteTrucksById2(truck_id, diner_id) {
-  return db('favouriteTrucks as ft')
+  return db('favourite_trucks as ft')
     
     
     .where({truck_id})
@@ -183,7 +183,7 @@ function findFavouriteTrucksById2(truck_id, diner_id) {
 
 
 function findFavTruckByDinerId(id) {
-  return db('favouriteTrucks')
+  return db('favourite_trucks')
   
     
     .where({id})
@@ -193,8 +193,8 @@ function findFavTruckByDinerId(id) {
 
 
 function addFavouriteTrucks(item) {
-  return db('favouriteTrucks')
-      .insert(item)
+  return db('favourite_trucks')
+      .insert(item, 'id')
       .then(ids => {
           return findFavouriteTrucksById(ids[0]);
         });
@@ -204,13 +204,13 @@ function addFavouriteTrucks(item) {
 
 
 function removeFavouriteTrucks(id) {
-  return db('favouriteTrucks')
+  return db('favourite_trucks')
     .where('id', id)
     .del();
 }
 
 function findByCustomerRatingTruckAvg(truck_id) {
-  return db('customerRatingtruck as crt')
+  return db('customer_rating_truck as crt')
     .avg('crt.rating')
     .where({ truck_id })
     

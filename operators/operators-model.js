@@ -99,13 +99,13 @@ function findOperatorTrucks(id) {
 
 
 function findCustomerRatingTruck(id) {
-  return db('customerRatingTruck as crt')
+  return db('customer_rating_truck as crt')
     .join('trucks as t', 't.id', 'crt.truck_id')
     .where('crt.truck_id', id)
 }
 
 function findCustomerRatingMenu(id) {
-  return db('customerRatingMenu as crm')
+  return db('customer_rating_truck as crm')
     .join('trucks as t', 't.id', 'crm.menu_id')
     .where('crm.menu_id', id)
 }

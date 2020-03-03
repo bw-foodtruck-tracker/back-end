@@ -61,7 +61,7 @@ exports.up = function(knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE')
         })
-        .createTable('customerRatingTruck', tbl => {
+        .createTable('customer_rating_truck', tbl => {
             tbl.increments();
             tbl.integer('rating').notNullable()
             tbl.integer('truck_id')
@@ -77,7 +77,7 @@ exports.up = function(knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE')
         })
-        .createTable('customerRatingMenu', tbl => {
+        .createTable('customer_rating_menu', tbl => {
             tbl.increments();
             tbl.integer('rating').notNullable()
             tbl.integer('menu_id')
@@ -93,7 +93,7 @@ exports.up = function(knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE')
         })
-        .createTable('favouriteTrucks', tbl => {
+        .createTable('favourite_trucks', tbl => {
             tbl.increments()
             tbl.string('username', 128)
             tbl.string('truckName', 128)
@@ -120,10 +120,9 @@ exports.up = function(knex) {
   
   exports.down = function(knex) {
     return knex.schema
-      .dropTableIfExists('diners_favouriteTrucks')
-      .dropTableIfExists('favouriteTrucks')
-      .dropTableIfExists('customerRatingMenu')
-      .dropTableIfExists('customerRatingTruck')
+      .dropTableIfExists('favourite_trucks')
+      .dropTableIfExists('customer_rating_menu')
+      .dropTableIfExists('customer_rating_truck')
       .dropTableIfExists('ItemPhotos')
       .dropTableIfExists('menuItems')
       .dropTableIfExists('trucks')
