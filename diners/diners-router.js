@@ -14,7 +14,7 @@ const checkRole = require('../auth/check-role-middleware-diner.js');
 router.get('/:id/CustomerMenuAvg', restricted, checkRole(), (req,res) => {
   Diners.findByCustomerRatingMenuAvg(req.params.id)
     .then(avg => {
-      res.status(200).json(Object.values(avg[0])[0])
+      res.json(Object.values(avg[0])[0])
     })
     .catch(err => {
       res.status(500).json(err)
@@ -77,22 +77,46 @@ router.post('/:id/customerRatingTruck', restricted, checkRole(), validateTruckId
     })
 })
 
-
-
+ 
 router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
     const newRating = {
         rating: req.body.rating
     }
   
     Diners.updateCustomerRatingTruck(req.params.id, newRating)
-      .then(post => {
-        res.status(200).json(post);
-      })
-      .catch(err => {
-          console.log(err)
-          res.status(500).json({error: "The rating could not be updated"});
-      })
-  });
+    .then(item => { 
+      Diners.findByCustomerRatingTruckAvg(req.params.id)
+        .then(avg => {
+          const updateTruck = {
+            customerRatingAvg: Object.values(avg[0])[0]
+          }
+          Operators.updateTruck(req.params.id, updateTruck)
+          .then(post => {
+            Diners.findByCustomerRatingTruckAvg(req.params.id)
+              .then(response => {
+                res.status(201).json({
+                  rating: item,
+                  MenuTruckAvg: Object.values(response[0])[0]
+                })
+              })
+            
+          }) 
+            .catch(err => {
+                console.log(err)
+                res.status(500).json({error: "The truck information could not be modified"});
+            })
+          
+        })
+        .catch(err => {
+          res.status(500).json(err)
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({error: "The rating could not be updated"});
+    })
+});
+      
 
   
 
@@ -165,6 +189,9 @@ router.put('/:id/customerRatingMenu', restricted, checkRole(), validateCustomerM
         rating: req.body.rating
     }
   
+ 
+        
+
     Diners.updateCustomerRatingMenu(req.params.id, newRating)
       .then(item => { 
         Diners.findByCustomerRatingMenuAvg(req.params.id)

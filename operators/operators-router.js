@@ -163,6 +163,16 @@ router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res)
 
 // MENU CRUD
 
+router.get('/:id/menu', validateMenuId, (req,res) => {
+  Operators.findByIdMenu(req.params.id)
+    .then(menu => {
+        res.status(201).json(menu)
+    })
+    .catch(err => {
+        res.status(500).json({error: "the menu could not be retrieved"})
+    })
+})
+
 router.post('/:id/menu', restricted, checkRole(), validateMenuInfo,(req,res) => {
 
     const newMenuItem = {
