@@ -52,7 +52,7 @@ module.exports = {
  
 function add(user) {
     return db('diners')
-        .insert(user)
+        .insert(user, 'id')
         .then(ids => {
             return findById(ids[0]);
           });
