@@ -28,7 +28,7 @@ exports.up = function(knex) {
         tbl.string('truckName', 128).notNullable()
         tbl.string('imageOfTruck', 128);
         tbl.string('cuisineType', 128).notNullable()
-        tbl.integer('customerRatingAvg')
+        tbl.decimal('customerRatingAvg', 14, 2)
         tbl.text('currentLocation')
         tbl.time('departureTime')
         tbl.integer('operator_id')
@@ -43,7 +43,7 @@ exports.up = function(knex) {
             tbl.string('itemName', 128).notNullable()
             tbl.string('itemDescription', 255);
             tbl.decimal('itemPrice', 14, 2).notNullable()
-            tbl.integer('customerRatingAvg')
+            tbl.decimal('customerRatingAvg', 14, 2)
             tbl.integer('truck_id')
                 .unsigned()
                 .notNullable()
@@ -99,7 +99,7 @@ exports.up = function(knex) {
             tbl.string('truckName', 128)
             tbl.string('cuisineType', 128)
             tbl.string('imageOfTruck', 128)
-            tbl.integer('customerRatingAvg')
+            tbl.decimal('customerRatingAvg', 14, 2)
             tbl.text('currentLocation')
             tbl.time('departureTime')
             tbl.integer('operator_id')

@@ -212,7 +212,6 @@ function removeFavouriteTrucks(id) {
 function findByCustomerRatingTruckAvg(truck_id) {
   return db('customer_rating_truck as crt')
     .avg('crt.rating')
-    .where({ truck_id })
     
 }
 
