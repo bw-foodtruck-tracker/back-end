@@ -6,16 +6,10 @@ const Operators = require('../operators/operators-model.js');
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-diner.js');
 
-router.get('/:id', (req,res) => {
-    Diners.findById(req.params.id)
-        .then(diner => {
-            const {id, username, email } = diner
-        })
-
-        
-})
 
 // Customer RatingAVG Truck/Menu
+
+
 
 router.get('/:id/CustomerMenuAvg', restricted, checkRole(), (req,res) => {
   Diners.findByCustomerRatingMenuAvg(req.params.id)
@@ -126,7 +120,7 @@ router.post('/:id/customerRatingMenu', restricted, checkRole(), validateMenuId, 
 
     }
 
-    
+    console.log(req)
     Diners.findMenuRatingById(req.params.id, req.decodedJwt.userid )
       .then(menu => {
         if(menu.length > 0){
@@ -220,14 +214,15 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (req,res, next) => {
     Operators.findByIdTruck(req.body.truck_id)
     .then(trucks => {
-        const newFavTruck = {
+      Diners.findByCustomerRatingTruckAvg(req.params.id)
+        .then(avg => {
+          const newFavTruck = {
             truck_id: req.body.truck_id,
             diner_id: req.params.id,
-            dinerName: username,
             truckName: trucks.truckName,
             cuisineType: trucks.cuisineType,
             imageOfTruck: trucks.imageOfTruck,
-            customerRatingAvg: trucks.customerRatingAvg,
+            customerRatingAvg: Object.values(avg[0])[0],
             currentLocation: trucks.currentLocation,
             departureTime: trucks.departureTime,
         }
@@ -247,9 +242,9 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (r
         
                 }
             })
-        
         })
-    
+        
+    })
 })
 
 

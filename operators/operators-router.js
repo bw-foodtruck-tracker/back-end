@@ -39,11 +39,9 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
 
 
 router.get('/:id/truck', restricted, checkRole(), (req,res) => {
-  Diners.findByCustomerRatingMenuAvg(req.params.id)
+  Diners.findByCustomerRatingTruckAvg(req.params.id)
     .then(avg => {
-      Diners.findByCustomerRatingTruckAvg(req.params.id)
-      .then(avg => {
-        Operators.findCustomerRatingTruck(req.params.id)
+      Operators.findCustomerRatingTruck(req.params.id)
       .then(rating => {
         const ratingList = rating.map(rate => {
           const {rating, truck_id, diner_id} = rate
@@ -58,8 +56,8 @@ router.get('/:id/truck', restricted, checkRole(), (req,res) => {
           Operators.findByIdTruckAll(req.params.id)
             .then(menu => {
               const MenuList = menu.map(menu => {
-                const {itemName, itemDescription, itemPrice, customerRatingAvg} = menu
-                return {itemName, itemDescription, itemPrice, customerRatingAvg}
+                const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu
+                return {itemName, itemDescription, itemPrice, customerRatingAvg, id}
               })
               // const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu[0]
               const PhotoList = menu.map(menu => {
@@ -73,7 +71,7 @@ router.get('/:id/truck', restricted, checkRole(), (req,res) => {
                   truckId: truck.id,
                   imageOfTruck: truck.imageOfTruck,
                   cuisineType: truck.cuisineType,
-                  Truck_customerRatingAvg: truck.customerRatingAvg,
+                  Truck_customerRatingAvg: Object.values(avg[0])[0],
                   currentLocation: truck.currentLocation,
                   departureTime: truck.departureTime,
                   operator_id: truck.operator_id,
@@ -85,11 +83,10 @@ router.get('/:id/truck', restricted, checkRole(), (req,res) => {
                   TruckRatings: ratingList
                 })
                 })
+                })
               })
             })
           })
-        })
-      })
       .catch(err => {
         res.status(500).json(err.message)
       })
