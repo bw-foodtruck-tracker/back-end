@@ -89,12 +89,6 @@ function findOperatorTrucks(id) {
     .where('t.operator_id', id)
 }
 
-// function findByIdTruckAll(id) {
-//   return db('trucks as t')
-//     .join('menuItems as mi', 'mi.truck_id', 't.id')
-//     .where('trucks.id', id)
-//     // .first()
-// }
 
 
 
