@@ -130,7 +130,7 @@ function findByIdTruckFav(id) {
 
 function addTruck(truck) {
   return db('trucks')
-      .insert(truck)
+      .insert(truck, 'id')
       .then(ids => {
           return findByIdTruck(ids[0]);
         });
@@ -161,7 +161,7 @@ function findByIdMenu(id) {
 
 function addMenuItem(item) {
   return db('menuItems')
-      .insert(item)
+      .insert(item, 'id')
       .then(ids => {
           return findByIdMenu(ids[0]);
         });
@@ -195,7 +195,7 @@ function findByIdItemPhotos(id) {
 
 function addItemPhotos(item) {
   return db('itemPhotos')
-      .insert(item)
+      .insert(item, 'id')
       .then(ids => {
           return findByIdItemPhotos(ids[0]);
         });

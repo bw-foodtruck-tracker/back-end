@@ -91,7 +91,7 @@ function findTruckRatingById(truck_id, diner_id){
 
 function addCustomerRatingTruck(item) {
   return db('customerRatingTruck')
-      .insert(item)
+      .insert(item, 'id')
       .then(ids => {
           return findByCustomerRatingId(ids[0]);
         });
@@ -137,7 +137,7 @@ function findByCustomerRatingMenuAvg(menu_id) {
 
 function addCustomerRatingMenu(item) {
   return db('customerRatingMenu')
-      .insert(item)
+      .insert(item, 'id')
       .then(ids => {
           return findByCustomerRatingMenuItemId(ids[0]);
         });
@@ -194,11 +194,11 @@ function findFavTruckByDinerId(id) {
 
 function addFavouriteTrucks(item) {
   return db('favouriteTrucks')
-      .insert(item)
-      // .then(ids => {
-      //     return findFavouriteTrucksById(ids[0]);
-      //   });
-}
+      .insert(item, 'id')
+//       // .then(ids => {
+//       //     return findFavouriteTrucksById(ids[0]);
+//       //   });
+// }
 
 
 function removeFavouriteTrucks(id) {
