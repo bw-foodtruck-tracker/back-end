@@ -124,10 +124,10 @@ exports.up = function(knex) {
       .dropTableIfExists('customer_rating_menu')
       .dropTableIfExists('customer_rating_truck')
       .dropTableIfExists('ItemPhotos')
+      .dropTableIfExists('menuItems')
       .dropTableIfExists('trucks')
       .dropTableIfExists('operators')
       .dropTableIfExists('diners')
-      .dropTableIfExists('menuItems')
       
       
   };
