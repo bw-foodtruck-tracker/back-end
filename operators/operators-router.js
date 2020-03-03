@@ -6,9 +6,9 @@ const Diners = require('../diners/diners-model.js')
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-operator.js');
 
+// Operator CRUD
 
-
-router.get('/:id', restricted, checkRole(), (req,res) => {
+router.get('/:id', restricted, checkRole(), validateOperatorId,(req,res) => {
     console.log(req)
     
     Operators.findById(req.params.id)
@@ -32,6 +32,33 @@ router.get('/:id/all', restricted, checkRole(), (req,res) => {
         })
 });
 
+
+router.delete('/:id/', restricted, checkRole(), validateOperatorId, (req, res) => {
+  Operators.removeOperator(req.params.id)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+      res.status(500).json({error: "The operator could not be removed"});
+    })
+});
+
+
+router.put('/:id/', restricted, checkRole(), validateOperatorId, validateUserInfo, (req, res) => {
+  const updateOperator = {
+      username: req.body.username,
+      email: req.body.email
+  }
+
+  Operators.updateOperator(req.params.id, updateOperator)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({error: "The operator could not be modified"});
+    })
+});
 
 // TRUCK CRUD
 
@@ -164,16 +191,29 @@ router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res)
 // MENU CRUD
 
 router.get('/:id/menu', validateMenuId, (req,res) => {
-  Operators.findByIdMenu(req.params.id)
-    .then(menu => {
-        res.status(201).json(menu)
+  Operators.findByIdTruckAll(req.params.id)
+    .then(menus => {
+      const {id, itemName, itemDescription, itemPrice, customerRatingAvg, truck_id} = menus[0]
+      PhotoList = menus.map(photo => {
+        const {image} = photo
+        return {image}
+      })
+        res.status(201).json({
+          id: id,
+          itemName: itemName,
+          itemDescription: itemDescription,
+          itemPrice: itemPrice,
+          customerRatingAvg: customerRatingAvg,
+          truck_id: truck_id,
+          photos: PhotoList
+        })
     })
     .catch(err => {
         res.status(500).json({error: "the menu could not be retrieved"})
     })
 })
 
-router.post('/:id/menu', restricted, checkRole(), validateMenuInfo,(req,res) => {
+router.post('/:id/menu', restricted, checkRole(), validateTruckId, validateMenuInfo,(req,res) => {
 
     const newMenuItem = {
         truck_id: req.params.id,
@@ -275,7 +315,7 @@ router.delete('/:id/item-photo', restricted, checkRole(), validateItemPhotoId, (
 
 
 
-// Validate Id
+// Validate Operator
 
 function validateOperatorId(req, res, next) {
     const {id} = req.params;
@@ -291,6 +331,17 @@ function validateOperatorId(req, res, next) {
       .catch(err => {
         res.status(500).json({message: 'exception error'});
       })
+}
+
+function validateUserInfo(req, res, next) {
+  const postData = req.body;
+  if(postData.username === "") {
+      res.status(400).json({ message: "missing username field" });
+  }  else if (!postData.email) {
+      res.status(400).json({ message: 'missing email field'})
+  } else {
+      next();
+  }
 }
 
 // Validate Menu

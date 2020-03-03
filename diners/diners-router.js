@@ -6,6 +6,47 @@ const Operators = require('../operators/operators-model.js');
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-diner.js');
 
+// Get Diner
+
+
+router.get('/:id', restricted, checkRole(), validateDinerId, (req,res) => {
+  Diners.findByIdDiner(req.params.id)
+    .then(diner => {
+      res.status(200).json(diner)
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
+router.delete('/:id/', restricted, checkRole(), validateDinerId, (req, res) => {
+  Diners.removeDiner(req.params.id)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+      res.status(500).json({error: "The diner could not be removed"});
+    })
+});
+
+
+router.put('/:id/', restricted, checkRole(), validateDinerId, validateUserInfo, (req, res) => {
+  const updateDiner = {
+      username: req.body.username,
+      email: req.body.email,
+      currentLocation: req.body.currentLocation
+  }
+
+  Diners.updateDiner(req.params.id, updateDiner)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({error: "The diner could not be modified"});
+    })
+});
+
 
 // Customer RatingAVG Truck/Menu
 
@@ -120,7 +161,7 @@ router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomer
 
   
 
-router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, validateCustomerRating,(req, res) => {
+router.delete('/:id/customerRatingTruck', restricted, checkRole(), validateCustomerRatingId, (req, res) => {
     Diners.removeCustomerRatingTruck(req.params.id)
       .then(post => {
         res.status(200).json(post);
@@ -418,7 +459,7 @@ function validateFavouriteTruckId(req, res, next) {
       })
 }
 
-// Check for Duplicate Favourite Truck
+// Validate Diner
 
 function validateDinerId(req, res, next) {
     const {id} = req.params;
@@ -434,6 +475,21 @@ function validateDinerId(req, res, next) {
       .catch(err => {
         res.status(500).json({message: 'exception error'});
       })
+}
+
+function validateUserInfo(req, res, next) {
+  const postData = req.body;
+  if(postData.username === "") {
+      res.status(400).json({ message: "username can not be empty" });
+  }  else if (!postData.currentLocation && !postData.email) {
+      res.status(400).json({ message: 'missing password and location field'})
+  } else if (!postData.email) {
+      res.status(400).json({ message: 'missing email field'})
+  } else if (!postData.currentLocation){
+      res.status(400).json({ message: 'missing location field'})
+  } else {
+      next();
+  }
 }
 
 
