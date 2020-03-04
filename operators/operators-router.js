@@ -178,6 +178,22 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
         })   
   });
 
+  router.put('/:id/truck/currentLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation,(req, res) => {
+ 
+
+          const updateTruck = {
+            currentLocation: req.body.currentLocation
+        }
+
+              Operators.updateTruck(req.params.id, updateTruck)
+                .then(post => {
+                  res.status(200).json(post);
+                })
+                .catch(err => {
+                  res.status(500).json({error: "The current location could not be modified"});
+                })  
+  });
+
 router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) => {
     Operators.removeTruck(req.params.id)
       .then(post => {
@@ -403,6 +419,16 @@ function validateTruckInfo(req, res, next) {
       next();
   }
 }
+
+function validateTruckInfoCurrentLocation(req, res, next) {
+  const postData = req.body;
+   if (!postData.currentLocation ) {
+      res.status(400).json({ message: 'missing current location field'})
+  }  else {
+      next();
+  }
+}
+
 
 //Validate Photo
 
