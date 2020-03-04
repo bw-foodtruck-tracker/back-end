@@ -10,7 +10,7 @@ const checkRole = require('../auth/check-role-middleware-diner.js');
 
 
 router.get('/queryCuisineType', restricted, checkRole(), validateDinerId, (req,res) => {
-  Diners.findByCuisineType(req.body.rating)
+  Diners.findByCuisineType(req.body.cuisineType)
     .then(cuisine => {
       if(!cuisine) {
         res.status(400).json({message: "no truck with that cuisine type found"})
@@ -24,7 +24,7 @@ router.get('/queryCuisineType', restricted, checkRole(), validateDinerId, (req,r
 })
 
 router.get('/queryTruckRating', restricted, checkRole(), validateDinerId, validateDinerRatingSearch, (req,res) => {
-  Diners.findByRating(req.body.cuisineType)
+  Diners.findByRating(req.body.rating)
     .then(cuisine => {
       if(!cuisine) {
         res.status(400).json({message: "no truck with that cuisine rating found"})
