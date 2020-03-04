@@ -139,6 +139,15 @@ function updateTruck(id, changes) {
     });
 }
 
+function updateTruckCurrentLocation(id, changes) {
+  return db('trucks')
+    .where({ id })
+    .update(changes)
+    .then(() => {
+      return findByIdTruck(id);
+    });
+}
+
 function removeTruck(id) {
   return db('trucks')
     .where('id', id)
