@@ -26,7 +26,22 @@ module.exports = {
     findByTruckSearch,
     findByCustomerRatingMenuAvg,
     findByCustomerRatingTruckAvg,
+    findByCuisineType,
+    findByRating
   };
+
+  // Diner search
+
+  function findByRating(customerRatingAvg) {
+    return db('trucks')
+      .where('customerRatingAvg', '>=', customerRatingAvg)
+  }
+
+  function findByCuisineType(search) {
+    return db('trucks')
+      .where('cuisineType', search)
+  }
+  //
 
   function find() {
     return db('diners')

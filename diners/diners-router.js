@@ -6,6 +6,39 @@ const Operators = require('../operators/operators-model.js');
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-diner.js');
 
+// Diner CuisineType Search
+
+
+router.get('/queryCuisineType', restricted, checkRole(), validateDinerId, (req,res) => {
+  Diners.findByCuisineType(req.body.rating)
+    .then(cuisine => {
+      if(!cuisine) {
+        res.status(400).json({message: "no truck with that cuisine type found"})
+      } else {
+        res.status(200).json(cuisine)
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
+router.get('/queryTruckRating', restricted, checkRole(), validateDinerId, validateDinerRatingSearch, (req,res) => {
+  Diners.findByRating(req.body.cuisineType)
+    .then(cuisine => {
+      if(!cuisine) {
+        res.status(400).json({message: "no truck with that cuisine rating found"})
+      } else {
+        res.status(200).json(cuisine)
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
+
+
 // Get Diner
 
 
@@ -492,6 +525,18 @@ function validateUserInfo(req, res, next) {
   }
 }
 
+
+
+function validateDinerRatingSearch(req, res, next) {
+  const postData = req.body;
+  if(postData.rating === "") {
+      res.status(400).json({ message: "rating can not be empty" });
+  }  else if (postData.rating > 5 || postData.rating < 1){
+    res.status(400).json({ message: 'please input a rating between 1 and 5.'})
+  } else {
+      next();
+  }
+}
 
 
 
