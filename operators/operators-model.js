@@ -1,5 +1,7 @@
 const db = require('../database/dbconfig.js');
 
+
+
 module.exports = {
     add,
     find,
@@ -25,9 +27,12 @@ module.exports = {
     findByIdTruckFav,
 
     findCustomerRatingTruck,
-    findCustomerRatingMenu
+    findCustomerRatingMenu,
   };
 
+
+
+  //
   function find() {
     return db('operators')
   }

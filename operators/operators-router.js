@@ -2,6 +2,8 @@ const router = require('express').Router();
 
 const Operators = require('./operators-model');
 const Diners = require('../diners/diners-model.js')
+const geocoder = require('../utils/geocoder');
+
 
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-operator.js');
@@ -122,29 +124,34 @@ router.get('/:id/truck', restricted, checkRole(), (req,res) => {
 
 router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateTruckInfo, (req,res) => {
   
-  const newTruck = {
-    operator_id: req.params.id,
-    truckName: req.body.truckName,
-    imageOfTruck: req.body.imageOfTruck,
-    cuisineType: req.body.cuisineType,
-    currentLocation: req.body.currentLocation,
-    departureTime: req.body.departureTime,
-}
+  
     
     
         Operators.findByTruckName(req.body.truckName)
           .then(truck => {
-            if(truck.length > 0) {
-              res.status(400).json({ error: "Truck name must be unique" });
-            } else {
-              Operators.addTruck(newTruck)
-                .then(truck => {
-                    res.status(201).json(truck);
+            geocoder.geocode(req.body.currentLocation)
+              .then(geo => {
+                console.log(geo)
+                const newTruck = {
+                  operator_id: req.params.id,
+                  truckName: req.body.truckName,
+                  imageOfTruck: req.body.imageOfTruck,
+                  cuisineType: req.body.cuisineType,
+                  currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
+                  departureTime: req.body.departureTime,
+              }
+              if(truck.length > 0) {
+                res.status(400).json({ error: "Truck name must be unique" });
+              } else {
+                Operators.addTruck(newTruck)
+                  .then(truck => {
+                      res.status(201).json(truck);
+                  })
+                  .catch(err => {
+                      res.status(500).json({ error: "There was an error while saving the task to the database" });
                 })
-                .catch(err => {
-                    res.status(500).json({ error: "There was an error while saving the task to the database" });
-              })
-            }
+              }
+            })
           })
 })
 
@@ -153,45 +160,55 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
  
     Diners.findByCustomerRatingTruckAvg(req.params.id)
         .then(avg => {
-          const updateTruck = {
-            truckName: req.body.truckName,
-            imageOfTruck: req.body.imageOfTruck,
-            cuisineType: req.body.cuisineType,
-            currentLocation: req.body.currentLocation,
-            departureTime: req.body.departureTime,
-            customerRatingAvg: Object.values(avg[0])[0]
-        }
-        Operators.findByTruckName(req.body.truckName)
-          .then(truck => {
-            if(truck.length > 0) {
-              res.status(400).json({ error: "Truck name must be unique" });
-            } else {
-              Operators.updateTruck(req.params.id, updateTruck)
-                .then(post => {
-                  res.status(200).json(post);
-                })
-                .catch(err => {
-                  res.status(500).json({error: "The truck information could not be modified"});
-                })
+          geocoder.geocode(req.body.currentLocation)
+            .then(geo=> {
+              const updateTruck = {
+                truckName: req.body.truckName,
+                imageOfTruck: req.body.imageOfTruck,
+                cuisineType: req.body.cuisineType,
+                currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
+                departureTime: req.body.departureTime,
+                customerRatingAvg: Object.values(avg[0])[0]
               }
-          })
+              Operators.findByTruckName(req.body.truckName)
+                .then(truck => {
+                  if(truck.length > 0) {
+                    res.status(400).json({ error: "Truck name must be unique" });
+                  } else {
+                    Operators.updateTruck(req.params.id, updateTruck)
+                      .then(post => {
+                        res.status(200).json(post);
+                      })
+                      .catch(err => {
+                        res.status(500).json({error: "The truck information could not be modified"});
+                      })
+                    }
+                })
+            })
         })   
   });
 
   router.put('/:id/truck/currentLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation,(req, res) => {
- 
 
-          const updateTruck = {
-            currentLocation: req.body.currentLocation
-        }
+    
 
-              Operators.updateTruck(req.params.id, updateTruck)
-                .then(post => {
-                  res.status(200).json(post);
-                })
-                .catch(err => {
-                  res.status(500).json({error: "The current location could not be modified"});
-                })  
+    Operators.findByIdTruck(req.params.id)
+      .then(truck => {
+        geocoder.geocode(req.body.currentLocation)
+          .then(geo => {
+            const updateTruck = {
+              currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
+            }
+            Operators.updateTruck(req.params.id, updateTruck)
+              .then(post => {
+
+                res.status(200).json(post);
+              })
+              .catch(err => {
+                res.status(500).json({error: "The current location could not be modified"});
+              })  
+          })
+      })
   });
 
 router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) => {

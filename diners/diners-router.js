@@ -6,6 +6,9 @@ const Operators = require('../operators/operators-model.js');
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-diner.js');
 
+const geocoder = require('../utils/geocoder');
+
+
 // Diner CuisineType Search
 
 
@@ -64,20 +67,43 @@ router.delete('/:id/', restricted, checkRole(), validateDinerId, (req, res) => {
 
 
 router.put('/:id/', restricted, checkRole(), validateDinerId, validateUserInfo, (req, res) => {
-  const updateDiner = {
-      username: req.body.username,
-      email: req.body.email,
-      currentLocation: req.body.currentLocation
-  }
+  
+  Diners.findById(req.params.id)
+    geocoder.geocode(req.body.currentLocation)
+      .then(geo => {
+        const updateDiner = {
+          username: req.body.username,
+          email: req.body.email,
+          currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
+        }
+        Diners.updateDiner(req.params.id, updateDiner)
+          .then(post => {
+            res.status(200).json(post);
+          })
+          .catch(err => {
+              console.log(err)
+              res.status(500).json({error: "The diner could not be modified"});
+          })
+      })
+});
 
-  Diners.updateDiner(req.params.id, updateDiner)
-    .then(post => {
-      res.status(200).json(post);
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json({error: "The diner could not be modified"});
-    })
+router.put('/:id/currentLocation', restricted, checkRole(), validateDinerId, validateDinerInfoCurrentLocation,(req, res) => {
+  
+  Diners.findById(req.params.id)
+    geocoder.geocode(req.body.currentLocation)
+      .then(geo => {
+        const updateDiner = {
+          currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
+        }
+        Diners.updateDiner(req.params.id, updateDiner)
+          .then(post => {
+            res.status(200).json(post);
+          })
+          .catch(err => {
+              console.log(err)
+              res.status(500).json({error: "The diner could not be modified"});
+          })
+      })
 });
 
 
@@ -534,6 +560,15 @@ function validateDinerRatingSearch(req, res, next) {
   }  else if (postData.rating > 5 || postData.rating < 1){
     res.status(400).json({ message: 'please input a rating between 1 and 5.'})
   } else {
+      next();
+  }
+}
+
+function validateDinerInfoCurrentLocation(req, res, next) {
+  const postData = req.body;
+   if (!postData.currentLocation ) {
+      res.status(400).json({ message: 'missing current location field'})
+  }  else {
       next();
   }
 }

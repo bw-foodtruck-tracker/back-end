@@ -1,5 +1,8 @@
 const db = require('../database/dbconfig.js');
 
+
+
+
 module.exports = {
     add,
     find,
@@ -41,7 +44,8 @@ module.exports = {
     return db('trucks')
       .where('cuisineType', search)
   }
-  //
+
+//
 
   function find() {
     return db('diners')
