@@ -195,8 +195,7 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
     Operators.findByIdTruck(req.params.id)
       .then(truck => {
         geocoder.geocode(req.body.currentLocation)
-          .then(result => {
-            console.log(result)
+          .then(geo => {
             const updateTruck = {
               currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
             }
