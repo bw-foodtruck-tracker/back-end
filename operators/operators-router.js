@@ -137,7 +137,7 @@ router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateT
                   truckName: req.body.truckName,
                   imageOfTruck: req.body.imageOfTruck,
                   cuisineType: req.body.cuisineType,
-                  currentLocation: `${geo[0].latitude} ${geo[0].longitude}`,
+                  currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
                   departureTime: req.body.departureTime,
               }
               if(truck.length > 0) {
@@ -166,7 +166,7 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
                 truckName: req.body.truckName,
                 imageOfTruck: req.body.imageOfTruck,
                 cuisineType: req.body.cuisineType,
-                currentLocation: `${geo[0].latitude} ${geo[0].longitude}`,
+                currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
                 departureTime: req.body.departureTime,
                 customerRatingAvg: Object.values(avg[0])[0]
               }
@@ -198,7 +198,7 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
           .then(result => {
             console.log(result)
             const updateTruck = {
-              currentLocation: `${result[0].latitude} ${result[0].longitude}`
+              currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
             }
             Operators.updateTruck(req.params.id, updateTruck)
               .then(post => {
