@@ -2,6 +2,8 @@ const router = require('express').Router();
 
 const Operators = require('./operators-model');
 const Diners = require('../diners/diners-model.js')
+const geocoder = require('../utils/geocoder');
+
 
 const restricted = require('../auth/restricted-middleware.js');
 const checkRole = require('../auth/check-role-middleware-operator.js');
@@ -179,19 +181,27 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
   });
 
   router.put('/:id/truck/currentLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation,(req, res) => {
- 
 
-          const updateTruck = {
-            currentLocation: req.body.currentLocation
-        }
+    
 
-              Operators.updateTruck(req.params.id, updateTruck)
-                .then(post => {
-                  res.status(200).json(post);
-                })
-                .catch(err => {
-                  res.status(500).json({error: "The current location could not be modified"});
-                })  
+    Operators.findByIdTruck(req.params.id)
+      .then(truck => {
+        geocoder.geocode(req.body.currentLocation)
+          .then(result => {
+            console.log(result)
+            const updateTruck = {
+              currentLocation: `${result[0].latitude} ${result[0].longitude}`
+            }
+            Operators.updateTruck(req.params.id, updateTruck)
+              .then(post => {
+
+                res.status(200).json(post);
+              })
+              .catch(err => {
+                res.status(500).json({error: "The current location could not be modified"});
+              })  
+          })
+      })
   });
 
 router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) => {
