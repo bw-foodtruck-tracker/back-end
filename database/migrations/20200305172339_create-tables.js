@@ -29,14 +29,25 @@ exports.up = function(knex) {
         tbl.string('imageOfTruck', 128);
         tbl.string('cuisineType', 128).notNullable()
         tbl.decimal('customerRatingAvg', 14, 2)
-        tbl.text('currentLocation')
-        tbl.time('departureTime')
         tbl.integer('operator_id')
             .unsigned()
             .notNullable()
             .references('operators.id')
             .onUpdate('CASCADE')
             .onDelete('CASCADE');
+        })
+        .createTable('location_truck', tbl => {
+            tbl.increments();
+            tbl.string('address', 128).notNullable()
+            tbl.text('longitude')
+            tbl.text('latitude')
+            tbl.time('departureTime')
+            tbl.integer('truck_id')
+                .unsigned()
+                .notNullable()
+                .references('trucks.id')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE')
         })
         .createTable('menuItems', tbl => {
             tbl.increments()
@@ -125,6 +136,7 @@ exports.up = function(knex) {
       .dropTableIfExists('customer_rating_truck')
       .dropTableIfExists('ItemPhotos')
       .dropTableIfExists('menuItems')
+      .dropTableIfExists('location_truck')
       .dropTableIfExists('trucks')
       .dropTableIfExists('operators')
       .dropTableIfExists('diners')

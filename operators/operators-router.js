@@ -70,52 +70,60 @@ router.put('/:id/', restricted, checkRole(), validateOperatorId, validateUserInf
 router.get('/:id/truck', restricted, checkRole(), (req,res) => {
   Diners.findByCustomerRatingTruckAvg(req.params.id)
     .then(avg => {
-      Operators.findCustomerRatingTruck(req.params.id)
-      .then(rating => {
-        const ratingList = rating.map(rate => {
-          const {rating, truck_id, diner_id} = rate
-          return {rating, truck_id, diner_id}
-        })
-        Operators.findCustomerRatingMenu(req.params.id)
-        .then(ratingMenu => {
-          const ratingMenuList = ratingMenu.map(rateMenu => {
-            const {rating, menu_id, diner_id} = rateMenu
-            return {rating, menu_id, diner_id}
+      Operators.findByLocationId(req.params.id)
+        .then(locs => {
+          const locList = locs.map(loc => {
+            const {address, longitude, latitude, departureTime} = loc
+            return {address, longitude, latitude, departureTime}
           })
-          Operators.findByIdTruckAll(req.params.id)
-            .then(menu => {
-              const MenuList = menu.map(menu => {
-                const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu
-                return {itemName, itemDescription, itemPrice, customerRatingAvg, id}
+          Operators.findCustomerRatingTruck(req.params.id)
+          .then(rating => {
+            const ratingList = rating.map(rate => {
+              const {rating, truck_id, diner_id} = rate
+              return {rating, truck_id, diner_id}
+            })
+            Operators.findCustomerRatingMenu(req.params.id)
+            .then(ratingMenu => {
+              const ratingMenuList = ratingMenu.map(rateMenu => {
+                const {rating, menu_id, diner_id} = rateMenu
+                return {rating, menu_id, diner_id}
               })
-              // const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu[0]
-              const PhotoList = menu.map(menu => {
-                const {image, menu_id} = menu
-                return {image, menu_id} 
-              })
-            Operators.findByIdTruck(req.params.id)
-              .then(truck => {
-                res.status(201).json({
-                  truck: truck.truckName,
-                  truckId: truck.id,
-                  imageOfTruck: truck.imageOfTruck,
-                  cuisineType: truck.cuisineType,
-                  Truck_customerRatingAvg: Object.values(avg[0])[0],
-                  currentLocation: truck.currentLocation,
-                  departureTime: truck.departureTime,
-                  operator_id: truck.operator_id,
-                  menu:{
-                    menuList: MenuList,
-                    PhotoList: PhotoList,
-                    RatingMenu: ratingMenuList
-                  },
-                  TruckRatings: ratingList
-                })
-                })
+              Operators.findByIdTruckAll(req.params.id)
+                .then(menu => {
+                  const MenuList = menu.map(menu => {
+                    const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu
+                    return {itemName, itemDescription, itemPrice, customerRatingAvg, id}
+                  })
+                  // const {itemName, itemDescription, itemPrice, customerRatingAvg, id} = menu[0]
+                  const PhotoList = menu.map(menu => {
+                    const {image, menu_id} = menu
+                    return {image, menu_id} 
+                  })
+                Operators.findByIdTruck(req.params.id)
+                  .then(truck => {
+                    res.status(201).json({
+                      truck: truck.truckName,
+                      truckId: truck.id,
+                      imageOfTruck: truck.imageOfTruck,
+                      cuisineType: truck.cuisineType,
+                      Truck_customerRatingAvg: Object.values(avg[0])[0],
+                      // currentLocation: truck.currentLocation,
+                      // departureTime: truck.departureTime,
+                      operator_id: truck.operator_id,
+                      Location: locList,
+                      menu:{
+                        menuList: MenuList,
+                        PhotoList: PhotoList,
+                        RatingMenu: ratingMenuList
+                      },
+                      TruckRatings: ratingList
+                    })
+                  })
                 })
               })
             })
           })
+        })
       .catch(err => {
         res.status(500).json(err.message)
       })
@@ -124,21 +132,19 @@ router.get('/:id/truck', restricted, checkRole(), (req,res) => {
 
 router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateTruckInfo, (req,res) => {
   
-  
-    
     
         Operators.findByTruckName(req.body.truckName)
           .then(truck => {
-            geocoder.geocode(req.body.currentLocation)
-              .then(geo => {
-                console.log(geo)
+            // geocoder.geocode(req.body.currentLocation)
+            //   .then(geo => {
+            //     console.log(geo)
                 const newTruck = {
                   operator_id: req.params.id,
                   truckName: req.body.truckName,
                   imageOfTruck: req.body.imageOfTruck,
                   cuisineType: req.body.cuisineType,
-                  currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
-                  departureTime: req.body.departureTime,
+                  // currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
+                  // departureTime: req.body.departureTime,
               }
               if(truck.length > 0) {
                 res.status(400).json({ error: "Truck name must be unique" });
@@ -152,7 +158,7 @@ router.post('/:id/truck', restricted, checkRole(), validateOperatorId, validateT
                 })
               }
             })
-          })
+          // })
 })
 
 
@@ -160,14 +166,14 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
  
     Diners.findByCustomerRatingTruckAvg(req.params.id)
         .then(avg => {
-          geocoder.geocode(req.body.currentLocation)
-            .then(geo=> {
+          // geocoder.geocode(req.body.currentLocation)
+          //   .then(geo=> {
               const updateTruck = {
                 truckName: req.body.truckName,
                 imageOfTruck: req.body.imageOfTruck,
                 cuisineType: req.body.cuisineType,
-                currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
-                departureTime: req.body.departureTime,
+                // currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`,
+                // departureTime: req.body.departureTime,
                 customerRatingAvg: Object.values(avg[0])[0]
               }
               Operators.findByTruckName(req.body.truckName)
@@ -185,31 +191,31 @@ router.put('/:id/truck', restricted, checkRole(), validateTruckId, validateTruck
                     }
                 })
             })
-        })   
+        // })   
   });
 
-  router.put('/:id/truck/currentLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation,(req, res) => {
+  // router.put('/:id/truck/currentLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation,(req, res) => {
 
     
 
-    Operators.findByIdTruck(req.params.id)
-      .then(truck => {
-        geocoder.geocode(req.body.currentLocation)
-          .then(geo => {
-            const updateTruck = {
-              currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
-            }
-            Operators.updateTruck(req.params.id, updateTruck)
-              .then(post => {
+  //   Operators.findByIdTruck(req.params.id)
+  //     .then(truck => {
+  //       geocoder.geocode(req.body.currentLocation)
+  //         .then(geo => {
+  //           const updateTruck = {
+  //             currentLocation: `Coordinates: ${geo[0].latitude} ${geo[0].longitude}, Address: ${geo[0].formattedAddress}`
+  //           }
+  //           Operators.updateTruck(req.params.id, updateTruck)
+  //             .then(post => {
 
-                res.status(200).json(post);
-              })
-              .catch(err => {
-                res.status(500).json({error: "The current location could not be modified"});
-              })  
-          })
-      })
-  });
+  //               res.status(200).json(post);
+  //             })
+  //             .catch(err => {
+  //               res.status(500).json({error: "The current location could not be modified"});
+  //             })  
+  //         })
+  //     })
+  // });
 
 router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res) => {
     Operators.removeTruck(req.params.id)
@@ -220,6 +226,94 @@ router.delete('/:id/truck', restricted, checkRole(), validateTruckId, (req, res)
         res.status(500).json({error: "The truck could not be removed"});
       })
 });
+
+// Truck Location
+
+router.get('/truck/:id/truckLocation', restricted, checkRole(), validateTruckId,(req,res) => {
+  console.log(req)
+  
+  Operators.findByLocationId(req.params.id)
+      .then(loc => {
+          res.status(201).json(loc)
+      })
+      .catch(err => {
+          res.status(500).json({error: "the location could not be retrieved"})
+      })
+});
+router.post('/truck/:id/truckLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation, (req,res) => {
+
+  Operators.findByLocationId(req.params.id)
+    .then(truck => {
+      console.log(truck)
+      if(!req.body.currentLocation) {
+        res.status(400).json({message: "please input a current location"})
+      } else {
+      geocoder.geocode(req.body.currentLocation)
+        .then(geo => {
+          console.log(geo)
+          const newLocation = {
+            truck_id: req.params.id,
+            address: geo[0].formattedAddress,
+            longitude: geo[0].longitude,
+            latitude: geo[0].latitude,
+            departureTime: req.body.departureTime,
+        }
+        if(truck.length === 0) {
+          Operators.addLocationTruck(req.params.id, newLocation)
+            .then(loc => {
+                res.status(201).json(loc);
+            })
+            .catch(err => {
+                res.status(500).json(err);
+          })
+        } else {
+          res.status(400).json({ error: "you have already added a location for this truck" });
+        }
+      })
+    }
+  })
+})
+
+
+router.put('/truck/:id/truckLocation', restricted, checkRole(), validateTruckId, validateTruckInfoCurrentLocation,(req, res) => {
+
+  
+
+  Operators.findByLocationId(req.params.id)
+    .then(truck => {
+      if(!req.body.currentLocation) {
+        res.status(400).json({message: "please input a current location"})
+      } else {
+      geocoder.geocode(req.body.currentLocation)
+        .then(geo => {
+          const updatelocation = {
+            address: geo[0].formattedAddress,
+            longitude: geo[0].longitude,
+            latitude: geo[0].latitude,
+            departureTime: req.body.departureTime,
+          }
+          Operators.updateLocationtruck(req.params.id, updatelocation)
+            .then(post => {
+              res.status(200).json(post);
+            })
+            .catch(err => {
+              res.status(500).json({error: "The current location could not be modified"});
+            })  
+        })
+      }
+    })
+});
+
+router.delete('/truck/:id/truckLocation', restricted, checkRole(), validateTruckId, (req, res) => {
+  Operators.removeLocationTruck(req.params.id)
+    .then(post => {
+      res.status(200).json(post);
+    })
+    .catch(err => {
+      res.status(500).json({error: "The truck could not be removed"});
+    })
+});
+
 
 // MENU CRUD
 
@@ -430,7 +524,7 @@ function validateTruckId(req, res, next) {
 
 function validateTruckInfo(req, res, next) {
   const postData = req.body;
-   if (postData.truckName === "" || !postData.imageOfTruck || !postData.imageOfTruck || !postData.cuisineType || !postData.currentLocation || !postData.departureTime) {
+   if (postData.truckName === "" || !postData.imageOfTruck || !postData.imageOfTruck || !postData.cuisineType ) {
       res.status(400).json({ message: 'missing field/s'})
   }  else {
       next();
@@ -439,12 +533,17 @@ function validateTruckInfo(req, res, next) {
 
 function validateTruckInfoCurrentLocation(req, res, next) {
   const postData = req.body;
-   if (!postData.currentLocation ) {
+   if (!postData.currentLocation === "") {
       res.status(400).json({ message: 'missing current location field'})
-  }  else {
+  }  else if (!postData.currentLocation && !postData.departureTime) {
+    res.status(400).json({message: "missing location and departure time field"})
+  } else if (!postData.departureTime) {
+    res.status(400).json({message: "missing departure time field"})
+  } else {
       next();
   }
 }
+
 
 
 //Validate Photo
