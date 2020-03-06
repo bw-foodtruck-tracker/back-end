@@ -199,13 +199,11 @@ router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomer
                   MenuTruckAvg: Object.values(response[0])[0]
                 })
               })
-            
           }) 
             .catch(err => {
                 console.log(err)
                 res.status(500).json({error: "The truck information could not be modified"});
             })
-          
         })
         .catch(err => {
           res.status(500).json(err)
@@ -349,9 +347,7 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (r
             truckName: trucks.truckName,
             cuisineType: trucks.cuisineType,
             imageOfTruck: trucks.imageOfTruck,
-            customerRatingAvg: Object.values(avg[0])[0],
-            currentLocation: trucks.currentLocation,
-            departureTime: trucks.departureTime,
+            customerRatingAvg: Object.values(avg[0])[0]
         }
         Diners.findFavouriteTrucksById2(req.body.truck_id, req.params.id )
             .then(truck => {
@@ -366,11 +362,9 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (r
                         .catch(err => {
                             res.status(500).json(err.message)
                         })
-        
                 }
             })
         })
-        
     })
 })
 
@@ -398,8 +392,8 @@ router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTru
         const {diner_id} = post[0]
         const List = post.map(resource => {
             console.log(resource)
-            const {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, currentLocation, departureTime, diner_id} = resource
-            return {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, currentLocation, departureTime, diner_id}
+            const {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, diner_id} = resource
+            return {truck_id, truckName, cuisineType, imageOfTruck, customerRatingAvg, diner_id}
         })
         Diners.findById(req.params.id)
             .then(item => {
@@ -413,8 +407,7 @@ router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTru
               res.status(500).json({error: "favourite trucks could not be displayed"});
             })
         })
-      })
-      
+    })
 })
 
 
