@@ -28,9 +28,43 @@ module.exports = {
 
     findCustomerRatingTruck,
     findCustomerRatingMenu,
+
+    findByLocationId,
+    addLocationTruck,
+    updateLocationtruck,
+    removeLocationTruck
   };
 
+  // Location Truck
 
+
+  function findByLocationId(id) {
+    return db('location_truck')
+      .where('truck_id', id)
+  }
+
+  function addLocationTruck(id, location) {
+    return db('location_truck')
+        .insert(location, 'id')
+        .then(()=> {
+            return findByLocationId(id);
+          });
+}
+
+function updateLocationtruck(truck_id, changes) {
+  return db('location_truck')
+    .where({ truck_id })
+    .update(changes)
+    .then(() => {
+      return findByLocationId(truck_id);
+    });
+}
+
+function removeLocationTruck(truck_id) {
+  return db('location_truck')
+    .where({truck_id})
+    .del();
+}
 
   //
   function find() {
@@ -104,7 +138,7 @@ function findCustomerRatingTruck(id) {
 }
 
 function findCustomerRatingMenu(id) {
-  return db('customer_rating_truck as crm')
+  return db('customer_rating_menu as crm')
     .join('trucks as t', 't.id', 'crm.menu_id')
     .where('crm.menu_id', id)
 }
