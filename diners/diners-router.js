@@ -196,7 +196,7 @@ router.put('/:id/customerRatingTruck', restricted, checkRole(), validateCustomer
               .then(response => {
                 res.status(201).json({
                   rating: item,
-                  MenuTruckAvg: Object.values(response[0])[0]
+                  TruckAvg: Object.values(response[0])[0]
                 })
               })
           }) 
