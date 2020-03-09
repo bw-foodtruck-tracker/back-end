@@ -336,7 +336,7 @@ router.delete('/:id/customerRatingMenu', restricted, checkRole(), validateCustom
 
 // Favourite Trucks
 
-router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (req,res, next) => {
+router.post('/:id/favouriteTrucks',  restricted, checkRole(), validateDinerId, (req,res, next) => {
     Operators.findByIdTruck(req.body.truck_id)
     .then(trucks => {
       Diners.findByCustomerRatingTruckAvg(req.params.id)
@@ -370,7 +370,7 @@ router.post('/:id/favouriteTrucks', restricted, checkRole(), validateDinerId, (r
 
 
 
-router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req, res) => {
+router.delete('/:id/favouriteTrucks',  restricted, checkRole(), validateFavouriteTruckId, (req, res) => {
 
     
     Diners.removeFavouriteTrucks(req.params.id)
@@ -384,7 +384,7 @@ router.delete('/:id/favouriteTrucks', restricted, checkRole(), validateFavourite
 
 
 
-router.get('/:id/favouriteTrucks', restricted, checkRole(), validateFavouriteTruckId, (req,res) => {
+router.get('/:id/favouriteTrucks',  restricted, checkRole(), validateFavouriteTruckId,  (req,res) => {
     
 
     Diners.findFavouriteTrucksById(req.params.id)
